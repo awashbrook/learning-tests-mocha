@@ -1,0 +1,26 @@
+{
+  "name": "learning-tests-mocha",
+  "author": "Andy Washbrook <andy.washbrook@thomsonreuters.com>",
+  "contributors": [],
+  "description": "Tests to learn node, mocha, sinon, chai, nock, supertest and Q.",
+  "version": "0.0.1",
+  "dependencies": {
+    "lodash": "~3.1",
+    "moment": "~2.9",
+    "q": "1.0.1",
+    "request": "2.34.0",
+    "soap": "~0.8"
+  },
+  "devDependencies": {
+    "chai": "1.9.1",
+    "nock": "0.59.1",
+    "sinon": "1.9.1",
+    "sinon-chai": "2.5.0",
+    "chai-as-promised": "4.3.0",
+    "grunt-mocha-istanbul": "2.0.0",
+    "grunt-supervisor": "0.1.2",
+    "istanbul-harmony": "0.3.0",
+    "supertest": "0.13.0",
+    "nock-vcr-recorder-mocha": "^0.3.2"
+  }
+}
