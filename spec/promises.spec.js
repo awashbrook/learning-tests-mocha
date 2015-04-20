@@ -100,7 +100,7 @@ describe('promises basics', function () {
   });
 
   describe.only('test q', function () {
-    describe("basic q usage with mocha and chai", function () {
+    describe("successful promise resolution with mocha and chai", function () {
       var cadey;
       beforeEach(function () {
         cadey = closurePerson('Cadey');
@@ -152,10 +152,71 @@ describe('promises basics', function () {
         var pizzaDelivered = pizzaOrderFulfillment.promise;
         expect(pizzaDelivered.then(cadey.eat, cadey.beHungry)) // Can only set up a single expectation with this concise style
           .to.eventually.have.string('Pepperoni') // Get stack with have string and not with exist above??
+          // TODO try compound expectation eg. expect(fn).to.throw(ReferenceError) .and.not.throw(/good function/);
           .notify(done);
 
         pizzaOrderFulfillment.resolve('Pepperoni');
+      });
+    });
+    describe("promise rejection with mocha and chai", function () {
+      var cadey;
+      beforeEach(function () {
+        cadey = closurePerson('Cadey');
+      });
+      it('should illustrate use terminating of promise chains with done - done for promise fulfillment', function (done) {
+        expect(cadey.disposition()).to.equal('Anticipation');
 
+        var pizzaOrderFulfillment = q.defer();
+        var pizzaDelivered = pizzaOrderFulfillment.promise;
+
+        pizzaDelivered.then(cadey.eat, cadey.beHungry)
+          .then(function (message) {
+            expect(message).not.to.exist;
+          })
+          .catch(function (err) {
+            expect(err).to.exist;
+            expect(err).to.be.an.instanceOf(Error);
+            expect(err.actual).to.have.string('menu');
+          })
+          .done(done);
+
+        pizzaOrderFulfillment.reject("Couldn't find take out menu!");
+      });
+      it('should illustrate returning our promises to mocha to await fulfillment', function () {
+        expect(cadey.disposition()).to.equal('Anticipation');
+
+        var pizzaOrderFulfillment = q.defer();
+        var pizzaDelivered = pizzaOrderFulfillment.promise;
+
+        pizzaOrderFulfillment.reject("Couldn't find take out menu!");
+
+        return pizzaDelivered.then(cadey.eat, cadey.beHungry)
+          .then(function (message) {
+            expect(message).not.to.exist;
+          })
+          .catch(function (err) {
+            expect(err).to.exist;
+            expect(err).to.be.an.instanceOf(Error);
+            expect(err.actual).to.have.string('menu');
+          });
+      });
+      it.skip('should illustrate use of chai-as-promised to notify of promise fulfillment', function (done) {
+        expect(cadey.disposition()).to.equal('Anticipation');
+
+        var pizzaOrderFulfillment = q.defer();
+        var pizzaDelivered = pizzaOrderFulfillment.promise;
+
+        pizzaOrderFulfillment.reject("Couldn't find take out menu!");
+
+        expect(pizzaDelivered.then(cadey.eat, cadey.beHungry)) // Can only set up a single expectation with this concise style
+          .to.be.rejected
+          //.to.be.rejectedWith(/menu/)
+          //.to.be.rejectedWith("\n\nCadey is hungry because: Couldn't find take out menu!")
+          .notify(done);
+
+        // CWP believes that my cadey error handler is returning a value not an error, so promise chain is not rejected:
+        // AssertionError: expected promise to be rejected but it was fulfilled with '\n\nCadey is hungry because: Couldn\'t find take out menu!'
+        // TODO Why do our tests above
       });
     });
 
