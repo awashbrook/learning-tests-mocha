@@ -12,17 +12,22 @@ var
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-var log = console; // TODO log and print
+var log = console; // TODO log and return?
 
 describe('promises basics', function () {
   var protoPerson = {
     _disposition: 'Anticipation',
     eat: function (food) {
-      this._disposition = 'Satisfied';log.info("\n\n" + this._name + " is eating delicious " + food);
+      this._disposition = 'Satisfied';
+      var str = ("\n\n" + this._name + " is eating delicious " + food);
+      log.info(str);
+      return str;
     },
     beHungry: function (reason) {
       this._disposition = 'Starving';
-      log.warn("\n\n" + this._name + " is hungry because: " + reason);
+      var str = ("\n\n" + this._name + " is hungry because: " + reason);
+      log.info(str);
+      return str;
     },
     disposition: function () {
       return this._disposition;
@@ -107,18 +112,19 @@ describe('promises basics', function () {
         //pizzaDelivered.then(cadey.eat, cadey.beHungry)
         //  .done(function () {
         //    console.log("Done Called...");
-        //    done(); // double done's somehow from this test which is run twice by mocha!!
+        //    done(); // double done's triggered somehow from this test which mocha somehow ran twice!!
         //  });
-
-        pizzaOrderFulfillment.resolve('Pepperoni');
 
         pizzaDelivered.then(cadey.eat, cadey.beHungry)
           .then(function (message) {
-            console.log("Done Called...");
+            //console.log("Done Called..." + message);
+            expect(message).to.exist;
             expect(message).to.have.string('Satisfied');
           })
           .done(done);
         //expect(cadey.disposition()).to.equal('Satisfied'); // Cmd line quiting before this...
+
+        pizzaOrderFulfillment.resolve('Pepperoni');
       });
       it('should illustrate returning our promises to mocha to await fulfillment', function () {
         expect(cadey.disposition()).to.equal('Anticipation');
@@ -126,10 +132,11 @@ describe('promises basics', function () {
         var pizzaOrderFulfillment = q.defer();
         var pizzaDelivered = pizzaOrderFulfillment.promise;
 
-        pizzaOrderFulfillment.resolve('Pepperoni');
+        pizzaOrderFulfillment.resolve('Pepperoni'); // This style relies on the fact you can resolve() before then() with promises
 
         return pizzaDelivered.then(cadey.eat, cadey.beHungry)
           .then(function(message) {
+            expect(message).to.exist;
             expect(message).to.have.string('Satisfied');
           });
       });
@@ -138,12 +145,12 @@ describe('promises basics', function () {
 
         var pizzaOrderFulfillment = q.defer();
         var pizzaDelivered = pizzaOrderFulfillment.promise;
+        expect(pizzaDelivered.then(cadey.eat, cadey.beHungry)) // Can only set up a single expectation with this concise style
+          .to.eventually.have.string('Satisfied') // Get stack with have string and not with exist above??
+          .notify(done);
 
         pizzaOrderFulfillment.resolve('Pepperoni');
 
-        expect(pizzaDelivered.then(cadey.eat, cadey.beHungry))
-          .to.eventually.have.string('Satisfied')
-          .notify(done);
       });
     });
 
