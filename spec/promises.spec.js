@@ -98,15 +98,21 @@ describe('promises basics', function () {
         done();
       }, 10);
     });
-    it("when chained together as promises", function (done) {
+    it("when issues in parallel as promises", function (done) {
       function setIntervalWithPromise(person) {
-        setInterval(function () {
+        return q.delay(10).then( function () {
           testPersonState(person);
-          done(); // Mocha Error: done() called multiple times
-        }, 10);
+        }).done(done);
       }
       setIntervalWithPromise(funkyAndy);
       setIntervalWithPromise(objectAndy);
+    });
+    it("when chained together as aggregated promises", function (done) {
+      var personPromises = q.all([
+        q.delay(10).then( function () { testPersonState(funkyAndy); }),
+        q.delay(10).then( function () { testPersonState(objectAndy); })
+      ]);
+      personPromises.then( function () { console.log('Both completed ok, yay :)')}).done(done);
     });
   });
   describe("successful promise resolution with mocha and chai", function () {
