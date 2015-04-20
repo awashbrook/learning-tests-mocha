@@ -14,7 +14,7 @@ chai.use(sinonChai);
 
 var log = console; // TODO log and return?
 
-describe('promises basics', function () {
+describe.skip('promises basics', function () {
   var protoPerson = {
     _disposition: 'Anticipation',
     eat: function (food) {

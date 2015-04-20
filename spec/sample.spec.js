@@ -9,6 +9,7 @@ var
   request = require('request'),
   soap = require('soap');
 
+var config = require('../src/config');
 var discovery = require('../src/discovery');
 
 // https://github.com/poetic/nock-vcr-recorder#configuration
@@ -20,14 +21,14 @@ var vcrOptions = {
 chai.use(sinonChai);
 
 //vcr.describe('sample', vcrOptions, function () {
-describe.skip('sample', function () {
+describe('sample', function () {
   describe('test internet endpoints', function () {
     it('github', function (done) {
       discovery.ping(done, 'https://github.com/');
     });
   });
   describe('request', function() {
-    describe.skip('external', function() {
+    describe('external', function() {
       it('github', function (done) {
         discovery.ping(done, 'https://github.com/');
       });

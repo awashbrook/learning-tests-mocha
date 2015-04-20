@@ -8,7 +8,7 @@ var
 
 chai.use(sinonChai);
 
-describe('test inheritance patterns', function () {
+describe.skip('test inheritance patterns', function () {
 
   describe('object oriented patterns', function () {
     //http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/

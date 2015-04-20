@@ -46,6 +46,12 @@ var fixtures = {
 };
 
 // TODO Setup manual nocks with broad scope after recording of specific...should take precedence over those recorded (TBC)
+var scope = nock('http://sbapp.hescloud.net')
+  .persist()
+  .get('/session/wsdl')
+  //.reply(200, cannedWsdl); // soap can parse WSDL from nock, awesome!
+  .replyWithFile(200, __dirname + '/../spec/fixtures/hec/hecWsdl.xml');
+
 
 //before(function () {
 //  // Load recorded nocks fist as we have specific train of requst/responses // TODO load *.nocks.json
