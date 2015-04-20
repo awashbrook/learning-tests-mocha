@@ -3,21 +3,22 @@
 var
   chai = require('chai'),
   expect = chai.expect,
+  chaiAsPromised = require('chai-as-promised'),
   sinon = require('sinon'),
   sinonChai = require('sinon-chai'),
 
   q = require('q');
 
+chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-var log = console;
+var log = console; // TODO log and print
 
 describe('promises basics', function () {
   var protoPerson = {
     _disposition: 'Anticipation',
     eat: function (food) {
-      this._disposition = 'Satisfied';
-      log.info("\n\n" + this._name + " is eating delicious " + food);
+      this._disposition = 'Satisfied';log.info("\n\n" + this._name + " is eating delicious " + food);
     },
     beHungry: function (reason) {
       this._disposition = 'Starving';
@@ -27,13 +28,15 @@ describe('promises basics', function () {
       return this._disposition;
     }
   };
-  // TODO can't figure out how to bind this for async promise callbacks invocation of eat, this doesn't exist above?!
+  // TODO can't figure out how to bind this for async promise callbacks invocation of eat
+  // You can't use .bind(this) on methods above as this does not existing in the object literal
+  //this is not bound correctly when promise calls back: Cannot set property '_disposition' of undefined,
 
   function closurePerson(name, disposition) {
     disposition = disposition || 'Anticipation';
     function eat(food) {
       disposition = 'Satisfied';
-      log.info("\n\n" + name + " is eating delicious " + food);
+      return log.info("\n\n" + name + " is eating delicious " + food);
     }
     function beHungry(reason) {
       disposition = 'Starving';
@@ -67,20 +70,18 @@ describe('promises basics', function () {
 
   it("should show our two person impls are identical in behaviour when called synchronously", function () {
     var andy;
-
     andy = closurePerson('Funky Andy');
     testPersonState(andy);
-
     andy = Object.create(protoPerson);
     andy._name = 'Object Andy';
     testPersonState(andy);
   });
-  it.only("should show our two person impls are identical in behaviour when called asynchronously", function (done) {
+  it("should show our two person impls are identical in behaviour when called asynchronously", function (done) {
     var funkyAndy = closurePerson('Funky Andy');
     setInterval(function () {
       testPersonState(funkyAndy);
+      //done(); // Mocha Error: done() called multiple times
     }, 10);
-
     var objectAndy = Object.create(protoPerson);
     objectAndy._name = 'Object Andy';
     setInterval(function () {
@@ -89,23 +90,61 @@ describe('promises basics', function () {
     }, 10);
   });
 
-  var cadey = closurePerson('Cadey');
-  //  this is not bound correctly when promise calls back: Cannot set property '_disposition' of undefined
-  var cadey = Object.create(protoPerson);
-  cadey._name = 'Cadey';
-
   describe('test q', function () {
+    describe("illustrate basic q usage with mocha and chai", function () {
+      var cadey;
+      beforeEach(function () {
+        cadey = closurePerson('Cadey');
+        //cadey = Object.create(protoPerson);
+        //cadey._name = 'Cadey'; // this is not bound correctly when promise calls back: Cannot set property '_disposition' of undefined
+      });
+      it('should illustrate use terminating of promise chains with done - done for promise fulfillment', function (done) {
+        expect(cadey.disposition()).to.equal('Anticipation');
 
-    it('should illustrate basic q usage', function (done) {
-      expect(cadey.disposition()).to.equal('Anticipation');
+        var pizzaOrderFulfillment = q.defer();
+        var pizzaDelivered = pizzaOrderFulfillment.promise;
 
-      var pizzaOrderFulfillment = q.defer();
-      var pizzaDelivered = pizzaOrderFulfillment.promise;
+        //pizzaDelivered.then(cadey.eat, cadey.beHungry)
+        //  .done(function () {
+        //    console.log("Done Called...");
+        //    done(); // double done's somehow from this test which is run twice by mocha!!
+        //  });
 
-      pizzaDelivered.then(cadey.eat, cadey.beHungry).done(done);
-      pizzaOrderFulfillment.resolve('Pepperoni');
+        pizzaOrderFulfillment.resolve('Pepperoni');
 
-      expect(cadey.disposition()).to.equal('Satisfied');
+        pizzaDelivered.then(cadey.eat, cadey.beHungry)
+          .then(function (message) {
+            console.log("Done Called...");
+            expect(message).to.have.string('Satisfied');
+          })
+          .done(done);
+        //expect(cadey.disposition()).to.equal('Satisfied'); // Cmd line quiting before this...
+      });
+      it('should illustrate returning our promises to mocha to await fulfillment', function () {
+        expect(cadey.disposition()).to.equal('Anticipation');
+
+        var pizzaOrderFulfillment = q.defer();
+        var pizzaDelivered = pizzaOrderFulfillment.promise;
+
+        pizzaOrderFulfillment.resolve('Pepperoni');
+
+        return pizzaDelivered.then(cadey.eat, cadey.beHungry)
+          .then(function(message) {
+            expect(message).to.have.string('Satisfied');
+          });
+      });
+      it('should illustrate use of chai-as-promised to notify of promise fulfillment', function (done) {
+        expect(cadey.disposition()).to.equal('Anticipation');
+
+        var pizzaOrderFulfillment = q.defer();
+        var pizzaDelivered = pizzaOrderFulfillment.promise;
+
+        pizzaOrderFulfillment.resolve('Pepperoni');
+
+        expect(pizzaDelivered.then(cadey.eat, cadey.beHungry))
+          .to.eventually.have.string('Satisfied')
+          .notify(done);
+      });
     });
 
     var Restaurant = function () {
@@ -125,7 +164,7 @@ describe('promises basics', function () {
       };
     };
 
-    it.skip('should illustrate promise rejection', function (done) {
+    it.skip('should illustrate promise rejection', function () {
       var pizzaPit = new Restaurant();
       var pizzaDelivered = pizzaPit.takeOrder('Capricciosa');
 
