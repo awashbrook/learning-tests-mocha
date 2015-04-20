@@ -35,6 +35,7 @@ describe('test inheritance patterns', function () {
       var george = Object.create(proto);
       expect(george.hello()).to.have.string('Nobody');
 
+      // TODO interferes with other timer based tests when we run alongside promise tests
       setInterval(function () {
         console.log(george.setName('George'));
         expect(george.hello()).to.have.string('George');

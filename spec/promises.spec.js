@@ -41,11 +41,15 @@ describe('promises basics', function () {
     disposition = disposition || 'Anticipation';
     function eat(food) {
       disposition = 'Satisfied';
-      return log.info("\n\n" + name + " is eating delicious " + food);
+      var str = ("\n\n" + name + " is eating delicious " + food);
+      log.info(str);
+      return str;
     }
     function beHungry(reason) {
       disposition = 'Starving';
-      log.warn("\n\n" + name + " is hungry because: " + reason);
+      var str = ("\n\n" + name + " is hungry because: " + reason);
+      log.info(str);
+      return str;
     }
     function getDisposition() {
       return disposition;
@@ -95,8 +99,8 @@ describe('promises basics', function () {
     }, 10);
   });
 
-  describe('test q', function () {
-    describe("illustrate basic q usage with mocha and chai", function () {
+  describe.only('test q', function () {
+    describe("basic q usage with mocha and chai", function () {
       var cadey;
       beforeEach(function () {
         cadey = closurePerson('Cadey');
@@ -117,11 +121,12 @@ describe('promises basics', function () {
 
         pizzaDelivered.then(cadey.eat, cadey.beHungry)
           .then(function (message) {
-            //console.log("Done Called..." + message);
             expect(message).to.exist;
-            expect(message).to.have.string('Satisfied');
+            expect(message).to.have.string('Pepperoni');
           })
-          .done(done);
+          .done(done); // done reports Uncaught AssertionError: expected undefined to exist, expectations fail above
+        // This style encourages one to catch AssertionErrors, let's see how the others handle non expectation failures?!
+
         //expect(cadey.disposition()).to.equal('Satisfied'); // Cmd line quiting before this...
 
         pizzaOrderFulfillment.resolve('Pepperoni');
@@ -132,13 +137,13 @@ describe('promises basics', function () {
         var pizzaOrderFulfillment = q.defer();
         var pizzaDelivered = pizzaOrderFulfillment.promise;
 
-        pizzaOrderFulfillment.resolve('Pepperoni'); // This style relies on the fact you can resolve() before then() with promises
+        pizzaOrderFulfillment.resolve('Pepperoni'); // This return style relies on the fact you can resolve() before then() with promises
 
         return pizzaDelivered.then(cadey.eat, cadey.beHungry)
           .then(function(message) {
             expect(message).to.exist;
-            expect(message).to.have.string('Satisfied');
-          });
+            expect(message).to.have.string('Pepperoni');
+          }); // Mocha will just say AssertionError: expected undefined to exist
       });
       it('should illustrate use of chai-as-promised to notify of promise fulfillment', function (done) {
         expect(cadey.disposition()).to.equal('Anticipation');
@@ -146,7 +151,7 @@ describe('promises basics', function () {
         var pizzaOrderFulfillment = q.defer();
         var pizzaDelivered = pizzaOrderFulfillment.promise;
         expect(pizzaDelivered.then(cadey.eat, cadey.beHungry)) // Can only set up a single expectation with this concise style
-          .to.eventually.have.string('Satisfied') // Get stack with have string and not with exist above??
+          .to.eventually.have.string('Pepperoni') // Get stack with have string and not with exist above??
           .notify(done);
 
         pizzaOrderFulfillment.resolve('Pepperoni');
