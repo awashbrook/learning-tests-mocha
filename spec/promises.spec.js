@@ -43,13 +43,13 @@ describe('promises basics', function () {
       disposition = 'Satisfied';
       var str = ("\n\n" + name + " is eating delicious " + food);
       log.info(str);
-      return str;
+      return str; // return q.resolve() or value
     }
     function beHungry(reason) {
       disposition = 'Starving';
       var str = ("\n\n" + name + " is hungry because: " + reason);
       log.info(str);
-      return str;
+      throw new Error(str); // return q.reject() or exception
     }
     function getDisposition() {
       return disposition;
@@ -170,13 +170,17 @@ describe('promises basics', function () {
         var pizzaDelivered = pizzaOrderFulfillment.promise;
 
         pizzaDelivered.then(cadey.eat, cadey.beHungry)
-          .then(function (message) {
-            expect(message).not.to.exist;
-          })
+          // Originally had my reject handler above return value, rather than throwing exception!
+          // The well meaning but superflous then() below succeeded in being resolved with my error message,
+          // which was of course re-thrown as an AssertionExcepton with err.actual set, then caught
+
+          //.then(function (message) {
+          //  expect(message).not.to.exist;
+          //})
           .catch(function (err) {
             expect(err).to.exist;
             expect(err).to.be.an.instanceOf(Error);
-            expect(err.actual).to.have.string('menu');
+            expect(err.message).to.have.string('menu');
           })
           .done(done);
 
@@ -191,16 +195,13 @@ describe('promises basics', function () {
         pizzaOrderFulfillment.reject("Couldn't find take out menu!");
 
         return pizzaDelivered.then(cadey.eat, cadey.beHungry)
-          .then(function (message) {
-            expect(message).not.to.exist;
-          })
           .catch(function (err) {
             expect(err).to.exist;
             expect(err).to.be.an.instanceOf(Error);
-            expect(err.actual).to.have.string('menu');
+            expect(err.message).to.have.string('menu');
           });
       });
-      it.skip('should illustrate use of chai-as-promised to notify of promise fulfillment', function (done) {
+      it('should illustrate use of chai-as-promised to notify of promise fulfillment', function (done) {
         expect(cadey.disposition()).to.equal('Anticipation');
 
         var pizzaOrderFulfillment = q.defer();
@@ -214,9 +215,8 @@ describe('promises basics', function () {
           //.to.be.rejectedWith("\n\nCadey is hungry because: Couldn't find take out menu!")
           .notify(done);
 
-        // CWP believes that my cadey error handler is returning a value not an error, so promise chain is not rejected:
+        // CwP carefully showed that my cadey error handler is returning a value, not an error, so promise chain is not rejected :)
         // AssertionError: expected promise to be rejected but it was fulfilled with '\n\nCadey is hungry because: Couldn\'t find take out menu!'
-        // TODO Why do our tests above
       });
     });
 
