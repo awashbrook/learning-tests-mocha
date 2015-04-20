@@ -17,11 +17,11 @@ describe('promises basics', function () {
     var protoPerson = {
       _disposition: 'Anticipation',
       eat: function (food) {
-        //this._disposition = 'Satisified';
+        this._disposition = 'Satisfied';
         log.info("\n\n" + this._name + "is eating delicious " + food);
       },
       beHungry: function (reason) {
-        //this._disposition = 'Starving';
+        this._disposition = 'Starving';
         log.warn("\n\n" + this._name + "is hungry because: " + reason);
       },
       disposition: function () {
@@ -33,7 +33,7 @@ describe('promises basics', function () {
     function closurePerson(name, disposition) {
       disposition = disposition || 'Anticipation';
       function eat(food) {
-        disposition = 'Satisified';
+        disposition = 'Satisfied';
         log.info("\n\n" + name + " is eating delicious " + food);
       }
       function beHungry(reason) {
@@ -45,8 +45,8 @@ describe('promises basics', function () {
       }
       return { // privileged methods
         disposition: getDisposition,
-        eat: eat(),
-        beHungry: beHungry()
+        eat: eat,
+        beHungry: beHungry
       };
     }
 
@@ -55,19 +55,25 @@ describe('promises basics', function () {
       expect(person.disposition).to.be.a('function');
       expect(person.disposition()).to.equal('Anticipation');
 
+      expect(person.beHungry).to.exist;
+      expect(person.beHungry).to.be.a('function');
+      person.beHungry("Couldn't find take out menu!");
+      expect(person.disposition()).to.equal('Starving');
+
       expect(person.eat).to.exist;
       expect(person.eat).to.be.a('function');
       person.eat('Bananas');
       expect(person.disposition()).to.equal('Satisfied');
     }
 
-    it.only("should show our two person impls are identical", function () {
+    it("should show our two person impls are identical in behaviour when called synchronously", function () {
       var andy;
-      //andy = Object.create(protoPerson);
-      //andy._name = 'Andy';
-      //testPersonState(andy);
 
       andy = closurePerson('Andy');
+      testPersonState(andy);
+
+      andy = Object.create(protoPerson);
+      andy._name = 'Andy';
       testPersonState(andy);
     });
 
