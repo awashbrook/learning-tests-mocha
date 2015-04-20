@@ -15,46 +15,72 @@ var log = console;
 describe('promises basics', function () {
   describe('test q', function () {
     var protoPerson = {
-      //disposition: 'Anticipation',
+      _disposition: 'Anticipation',
       eat: function (food) {
-        this.disposition = 'Satisified';
-        log.info("\n\n" + this.name + "is eating delicious " + food);
+        //this._disposition = 'Satisified';
+        log.info("\n\n" + this._name + "is eating delicious " + food);
       },
       beHungry: function (reason) {
-        this.disposition = 'Starving';
-        log.warn("\n\n" + this.name + "is hungry because: " + reason);
+        //this._disposition = 'Starving';
+        log.warn("\n\n" + this._name + "is hungry because: " + reason);
+      },
+      disposition: function () {
+        return this._disposition;
       }
     };
+    // TODO can't figure out how to bind this for promise callbacksinvocation of eat, this doesn't exist above?!
 
-    var andy = Object.create(protoPerson);
-    andy.name = 'Andy';
-    andy.disposition = 'Anticipation';
-
-    var closurePerson = function (name, disposition) {
-
-      this.eat = function (food) {
+    function closurePerson(name, disposition) {
+      disposition = disposition || 'Anticipation';
+      function eat(food) {
         disposition = 'Satisified';
-        log.info("\n\n" + name + "is eating delicious " + food);
-      };
-      this.beHungry = function (reason) {
+        log.info("\n\n" + name + " is eating delicious " + food);
+      }
+      function beHungry(reason) {
         disposition = 'Starving';
-        log.warn("\n\n" + name + "is hungry because: " + reason);
-      };
-      this.disposition = function () {
+        log.warn("\n\n" + name + " is hungry because: " + reason);
+      }
+      function getDisposition() {
         return disposition;
+      }
+      return { // privileged methods
+        disposition: getDisposition,
+        eat: eat(),
+        beHungry: beHungry()
       };
-    };
+    }
 
-    var funkyAndy = new closurePerson('Andy', "Anticipating...");
+    function testPersonState(person) {
+      expect(person.disposition).to.exist;
+      expect(person.disposition).to.be.a('function');
+      expect(person.disposition()).to.equal('Anticipation');
+
+      expect(person.eat).to.exist;
+      expect(person.eat).to.be.a('function');
+      person.eat('Bananas');
+      expect(person.disposition()).to.equal('Satisfied');
+    }
+
+    it.only("should show our two person impls are identical", function () {
+      var andy;
+      //andy = Object.create(protoPerson);
+      //andy._name = 'Andy';
+      //testPersonState(andy);
+
+      andy = closurePerson('Andy');
+      testPersonState(andy);
+    });
 
     it('should illustrate basic q usage', function (done) {
-      var pizzaOrderFulfillment = q.defer()
+      expect(andy.disposition()).to.equal('Anticipation');
+
+      var pizzaOrderFulfillment = q.defer();
       var pizzaDelivered = pizzaOrderFulfillment.promise;
 
       pizzaDelivered.then(andy.eat, andy.beHungry).done(done);
       pizzaOrderFulfillment.resolve('Pepperoni');
 
-      expect(andy.disposition).to.equal('Satisfied');
+      expect(andy.disposition()).to.equal('Satisfied');
     });
 
     var Restaurant = function () {
@@ -70,7 +96,7 @@ describe('promises basics', function () {
         currentOrder.deferred.resolve(currentOrder.items);
       };
       this.problemWithOrder = function (reason) {
-        currentOrder.deferred.reject(reason)
+        currentOrder.deferred.reject(reason);
       };
     };
 
@@ -81,10 +107,8 @@ describe('promises basics', function () {
       pizzaDelivered.then(andy.eat, andy.beHungry);
 
       pizzaPit.problemWithOrder('no Capricciosa, only Margherita');
-
-
-    })
-  })
+    });
+  });
 });
 
 

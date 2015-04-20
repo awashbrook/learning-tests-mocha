@@ -22,5 +22,8 @@
     "istanbul-harmony": "0.3.0",
     "supertest": "0.13.0",
     "nock-vcr-recorder-mocha": "^0.3.2"
+  },
+  "scripts": {
+    "test": "jshint src spec; ./node_modules/.bin/mocha spec"
   }
 }

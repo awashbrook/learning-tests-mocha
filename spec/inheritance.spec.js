@@ -10,27 +10,40 @@ chai.use(sinonChai);
 
 describe('test inheritance patterns', function () {
 
-  it("should simpy create an object using Object.create() instead of 'new'", function () {
+  describe('object oriented patterns', function () {
     //http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/
-    var proto = {
-      name: 'Nobody',
+    var proto = { // No constructor function
+      _name: 'Nobody', // Pseudo-private members only
       hello: function hello() {
-        return 'Hello, my name is ' + this.name;
+        return 'Hello, my name is ' + this._name;
       },
       setName: function (name) {
-        this.name = name;
+        this._name = name;
         return this;
       }
     };
+    it("should simpy create an object using Object.create() instead of 'new'", function () {
+      var george = Object.create(proto);
+      expect(george.hello()).to.have.string('Nobody');
 
-    var george = Object.create(proto);
-    expect(george.hello()).to.have.string('Nobody'); // AW
+      george._name = 'George';  // Exuse the intrusion!!
+      expect(george.hello()).to.have.string('George');
 
-    george.name = 'George';
-    expect(george.hello()).to.have.string('George');
+      expect(george.setName('Andy').hello()).to.have.string('Andy');
+    });
+    it("should show such objects have 'this' set appropriately for callbacks", function (done) {
+      var george = Object.create(proto);
+      expect(george.hello()).to.have.string('Nobody');
 
-    expect(george.setName('Andy').hello()).to.have.string('Andy');
+      setInterval(function () {
+        console.log(george.setName('George'));
+        expect(george.hello()).to.have.string('George');
+        done();
+      }, 10);
+    });
+
   });
+
 
   describe("Closure based private state using Functional Inheritance", function () {
     it.skip("should show functional inheritance ala Crockford", function () {
@@ -75,9 +88,9 @@ describe('test inheritance patterns', function () {
           return diameter() * Math.PI;
         }
         return {
-          radius: getSetRadius, // privaliged method
+          radius: getSetRadius, // privileged method
           //diameter: diameter, // private method
-          circumference: circumference // privaleged
+          circumference: circumference // privileged
         }
       }
 
