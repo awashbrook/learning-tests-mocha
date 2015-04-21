@@ -26,7 +26,7 @@ chai.use(sinonChai);
 describe('public api sample', function () {
   this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
 
-  describe('test gists', function () {
+  describe.only('gists github api', function () {
     before(function () {
       nockConfig.fixtures.helpers.startRecordingFixtures('gists');
     });
@@ -61,7 +61,7 @@ describe('public api sample', function () {
     it('list my gists with auth token', function (done) {
       request(gistOpts, function (error, response, body) {
           expect(response.statusCode).to.equal(200);
-          console.log(body);
+          //console.log(body);
           console.log('Discovered ' + body.length + ' gists');
           expect(body[0].url).to.equal('https://api.github.com/gists/566494c6108aa8ad0981');
           done();
@@ -71,7 +71,7 @@ describe('public api sample', function () {
     it('list my starred gists with auth token', function (done) {
       request(starredGistOpts, function (error, response, body) {
           expect(response.statusCode).to.equal(200);
-          console.log(body);
+          //console.log(body);
           console.log('Discovered ' + body.length + ' gists');
           expect(body[0].url).to.equal('https://api.github.com/gists/6614023');
           done();

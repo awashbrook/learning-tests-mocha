@@ -15,7 +15,7 @@
   {
     "scope": "https://api.github.com:443",
     "method": "GET",
-    "path": "/gists?access_token=44fd5341d5a18af19e7f2756159dc45452d4a071",
+    "path": "/gists?access_token=FAKE_TOKEN",
     "body": "",
     "status": 200,
     "response": [
@@ -117,12 +117,12 @@
     ],
     "headers": {
       "server": "GitHub.com",
-      "date": "Tue, 21 Apr 2015 07:19:21 GMT",
+      "date": "Tue, 21 Apr 2015 07:52:02 GMT",
       "content-type": "application/json; charset=utf-8",
       "content-length": "3821",
       "status": "200 OK",
       "x-ratelimit-limit": "5000",
-      "x-ratelimit-remaining": "4993",
+      "x-ratelimit-remaining": "4977",
       "x-ratelimit-reset": "1429604211",
       "cache-control": "private, max-age=60, s-maxage=60",
       "etag": "\"fd30b32c4737900ba939f39b44f80123\"",
@@ -136,16 +136,16 @@
       "access-control-allow-credentials": "true",
       "access-control-expose-headers": "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
       "access-control-allow-origin": "*",
-      "x-github-request-id": "5E0AA53C:057D:14F3B3F:5535F9F9",
+      "x-github-request-id": "5E0AA53C:0E5C:6AB32E:553601A2",
       "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
       "x-content-type-options": "nosniff",
-      "x-served-by": "474556b853193c38f1b14328ce2d1b7d"
+      "x-served-by": "a30e6f9aa7cf5731b87dfb3b9992202d"
     }
   },
   {
     "scope": "https://api.github.com:443",
     "method": "GET",
-    "path": "/gists/starred?access_token=44fd5341d5a18af19e7f2756159dc45452d4a071",
+    "path": "/gists/starred?access_token=FAKE_TOKEN",
     "body": "",
     "status": 200,
     "response": [
@@ -261,12 +261,12 @@
     ],
     "headers": {
       "server": "GitHub.com",
-      "date": "Tue, 21 Apr 2015 07:19:22 GMT",
+      "date": "Tue, 21 Apr 2015 07:52:02 GMT",
       "content-type": "application/json; charset=utf-8",
       "content-length": "4046",
       "status": "200 OK",
       "x-ratelimit-limit": "5000",
-      "x-ratelimit-remaining": "4992",
+      "x-ratelimit-remaining": "4976",
       "x-ratelimit-reset": "1429604211",
       "cache-control": "private, max-age=60, s-maxage=60",
       "etag": "\"1d6621bd6c373c4f3c93da9fe389e5b8\"",
@@ -280,10 +280,10 @@
       "access-control-allow-credentials": "true",
       "access-control-expose-headers": "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
       "access-control-allow-origin": "*",
-      "x-github-request-id": "5E0AA53C:057C:12848A8:5535F9FA",
+      "x-github-request-id": "5E0AA53C:0E5A:49032D:553601A2",
       "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
       "x-content-type-options": "nosniff",
-      "x-served-by": "a6882e5cd2513376cb9481dbcd83f3a2"
+      "x-served-by": "c6c65e5196703428e7641f7d1e9bc353"
     }
   }
 ]
