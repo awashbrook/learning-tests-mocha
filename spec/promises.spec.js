@@ -15,6 +15,7 @@ chai.use(sinonChai);
 var log = console; // TODO log and return?
 
 describe('sample based on two alternative "object" approaches to inheritance', function () {
+
   var protoPerson = {
     _disposition: 'Anticipation',
     eat: function (food) {
@@ -98,13 +99,6 @@ describe('sample based on two alternative "object" approaches to inheritance', f
         done();
       }, 10);
     });
-    it("when chained together as aggregated promises", function (done) {
-      var personPromises = q.all([
-        q.delay(10).then( function () { testPersonState(funkyAndy); }),
-        q.delay(10).then( function () { testPersonState(objectAndy); })
-      ]);
-      personPromises.then( function () { console.log('Both completed ok, yay :)')}).done(done);
-    });
     it.skip("when issues in parallel as promises: can't fairly keep this test as it will invokes done twice", function (done) {
       function setIntervalWithPromise(person) {
         return q.delay(10).then( function () {
@@ -113,6 +107,37 @@ describe('sample based on two alternative "object" approaches to inheritance', f
       }
       setIntervalWithPromise(funkyAndy);
       setIntervalWithPromise(objectAndy);
+    });
+    it("when chained together as aggregated promises", function (done) {
+      var personPromises = q.all([
+        q.delay(10).then( function () { testPersonState(funkyAndy); }),
+        q.delay(10).then( function () { testPersonState(objectAndy); })
+      ]);
+      personPromises.then( function () { console.log('Both completed ok, yay :)')}).done(done);
+    });
+  });
+  describe.only("chained vs nested promises", function () {
+    this.timeout(30 * 1000);
+    var personPromises;
+    beforeEach(function () {
+      personPromises = [
+        q.delay(1).then( function () { console.log('1 Millis OK') }),
+        q.delay(10).then( function () { console.log('10 Millis OK') }),
+        q.delay(100).then( function () { console.log('100 Millis OK') }),
+        q.delay(1000).then( function () { console.log('One Sec OK') }),
+        q.delay(5000).then( function () { console.log('Five Secs OK') })
+      ];
+    });
+    it("when chained together as aggregated promises with all()", function (done) {
+      q.all(personPromises).then( function () { console.log('All completed ok, yay :)')}).done(done);
+    });
+    it.skip("when nested together as a sequence of promises", function (done) {
+      var result = q("Initial Value");
+      personPromises.forEach(function (f) {
+        result = result.then(f);
+      });
+      result.then( function () { console.log('All completed ok, yay :)')}).done(done);
+      // TODO Only first promise in array firing
     });
   });
   describe("successful promise resolution with mocha and chai", function () {
