@@ -23,13 +23,14 @@ var vcrOptions = {
 chai.use(sinonChai);
 
 //vcr.describe('sample', vcrOptions, function () {
-describe('sample', function () {
-  describe('test internet endpoints', function () {
-    it('github', function (done) {
-      discovery.ping(done, 'https://github.com/');
+describe('public api sample', function () {
+  describe('test gists', function () {
+    before(function () {
+      nockConfig.fixtures.helpers.startRecordingFixtures('gists');
     });
-  });
-  describe.only('test gists', function () {
+    after(function () {
+      nockConfig.fixtures.helpers.finishRecordingFixtures('gists');
+    });
     var gistOpts, starredGistOpts;
     beforeEach(function () {
       gistOpts = {
@@ -76,12 +77,15 @@ describe('sample', function () {
       );
     });
   });
-  describe('request', function() {
-    describe('external', function() {
-      it('github', function (done) {
-        discovery.ping(done, 'https://github.com/');
-      });
+  describe('home energy api', function() {
+    describe('hec', function() {
       it('hecWsdl', function (done) {
+        before(function () {
+          nockConfig.fixtures.helpers.startRecordingFixtures('hec');
+        });
+        after(function () {
+          nockConfig.fixtures.helpers.finishRecordingFixtures('hec');
+        });
         request('http://sbapp.hescloud.net/session/wsdl', function (error, response, body) {
             expect(response.statusCode).to.equal(200);
             done();

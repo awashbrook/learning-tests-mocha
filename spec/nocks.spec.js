@@ -14,8 +14,12 @@ var hecFixturesDir = fixturesDir + '/hec';
 
 var fixtures = {
   types: {
+    gists: {
+      record: true, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
+      recordedFixturesFile: fixturesDir + '/gists/gists.nocks.json'
+    },
     hec: {
-      record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
+      record: true, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
       recordedFixturesFile: fixturesDir + '/hec/hec.nocks.json'
     }
   },
@@ -46,12 +50,18 @@ var fixtures = {
 };
 
 // TODO Setup manual nocks with broad scope after recording of specific...should take precedence over those recorded (TBC)
-var scope = nock('http://sbapp.hescloud.net')
-  .persist()
-  .get('/session/wsdl')
-  //.reply(200, cannedWsdl); // soap can parse WSDL from nock, awesome!
-  .replyWithFile(200, __dirname + '/../spec/fixtures/hec/hecWsdl.xml');
 
+//var gistScope = nock('https://api.github.com')
+//    .persist()
+//    .filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=FAKE_TOKEN')
+//    .get('/gists/starred?access_token=FAKE_TOKEN')
+//    .reply(200, '')
+//
+//var hecScope = nock('http://sbapp.hescloud.net')
+//  .persist()
+//  .get('/session/wsdl')
+//  //.reply(200, cannedWsdl); // soap can parse WSDL from nock, awesome!
+//  .replyWithFile(200, __dirname + '/../spec/fixtures/hec/hecWsdl.xml');
 
 //before(function () {
 //  // Load recorded nocks fist as we have specific train of requst/responses // TODO load *.nocks.json
@@ -73,7 +83,13 @@ var scope = nock('http://sbapp.hescloud.net')
 //  }
 //});
 
-describe("faking the session id in outgoing requests", function () {
+describe("faking github oauth access token in outgoing requests", function () {
+  it('should transform access token into FAKE_TOKEN', function () {
+    var exampleGistRequest = 'https://api.github.com/gists/starred?access_token=123456789';
+    expect(exampleGistRequest.replace(/^(.*)\?access_token.*$/g, '$1?access_token=FAKE_TOKEN'))
+      .to.have.string('https://api.github.com/gists/starred?access_token=FAKE_TOKEN');
+  });
+
 });
 
 module.exports.fixtures = fixtures;
