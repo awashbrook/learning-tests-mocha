@@ -1,0 +1,289 @@
+[
+  {
+    "scope": "https://api.github.com:443",
+    "method": "GET",
+    "path": "/gists",
+    "body": "",
+    "status": 403,
+    "response": "Request forbidden by administrative rules. Please make sure your request has a User-Agent header (http://developer.github.com/v3/#user-agent-required). Check https://developer.github.com for other possible causes.\n",
+    "headers": {
+      "cache-control": "no-cache",
+      "connection": "close",
+      "content-type": "text/html"
+    }
+  },
+  {
+    "scope": "https://api.github.com:443",
+    "method": "GET",
+    "path": "/gists?access_token=44fd5341d5a18af19e7f2756159dc45452d4a071",
+    "body": "",
+    "status": 200,
+    "response": [
+      {
+        "url": "https://api.github.com/gists/566494c6108aa8ad0981",
+        "forks_url": "https://api.github.com/gists/566494c6108aa8ad0981/forks",
+        "commits_url": "https://api.github.com/gists/566494c6108aa8ad0981/commits",
+        "id": "566494c6108aa8ad0981",
+        "git_pull_url": "https://gist.github.com/566494c6108aa8ad0981.git",
+        "git_push_url": "https://gist.github.com/566494c6108aa8ad0981.git",
+        "html_url": "https://gist.github.com/566494c6108aa8ad0981",
+        "files": {
+          "PublicGistTest.md": {
+            "filename": "PublicGistTest.md",
+            "type": "text/plain",
+            "language": "Markdown",
+            "raw_url": "https://gist.githubusercontent.com/awashbrook/566494c6108aa8ad0981/raw/d9197a31a8ad92e2e9da5f8bd7b3d84e568ee54b/PublicGistTest.md",
+            "size": 23
+          }
+        },
+        "public": true,
+        "created_at": "2014-05-09T10:34:40Z",
+        "updated_at": "2014-05-09T10:41:50Z",
+        "description": "Friday.md",
+        "comments": 1,
+        "user": null,
+        "comments_url": "https://api.github.com/gists/566494c6108aa8ad0981/comments",
+        "owner": {
+          "login": "awashbrook",
+          "id": 1024064,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1024064?v=3",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/awashbrook",
+          "html_url": "https://github.com/awashbrook",
+          "followers_url": "https://api.github.com/users/awashbrook/followers",
+          "following_url": "https://api.github.com/users/awashbrook/following{/other_user}",
+          "gists_url": "https://api.github.com/users/awashbrook/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/awashbrook/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/awashbrook/subscriptions",
+          "organizations_url": "https://api.github.com/users/awashbrook/orgs",
+          "repos_url": "https://api.github.com/users/awashbrook/repos",
+          "events_url": "https://api.github.com/users/awashbrook/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/awashbrook/received_events",
+          "type": "User",
+          "site_admin": false
+        }
+      },
+      {
+        "url": "https://api.github.com/gists/488ae845c00f0cae3e37",
+        "forks_url": "https://api.github.com/gists/488ae845c00f0cae3e37/forks",
+        "commits_url": "https://api.github.com/gists/488ae845c00f0cae3e37/commits",
+        "id": "488ae845c00f0cae3e37",
+        "git_pull_url": "https://gist.github.com/488ae845c00f0cae3e37.git",
+        "git_push_url": "https://gist.github.com/488ae845c00f0cae3e37.git",
+        "html_url": "https://gist.github.com/488ae845c00f0cae3e37",
+        "files": {
+          "PrivateGistTest.md": {
+            "filename": "PrivateGistTest.md",
+            "type": "text/plain",
+            "language": "Markdown",
+            "raw_url": "https://gist.githubusercontent.com/awashbrook/488ae845c00f0cae3e37/raw/ceb386089281a992cd5ac324abb788d1d88ff565/PrivateGistTest.md",
+            "size": 16171
+          },
+          "test": {
+            "filename": "test",
+            "type": "text/plain",
+            "language": null,
+            "raw_url": "https://gist.githubusercontent.com/awashbrook/488ae845c00f0cae3e37/raw/33e24a450e1d2e82485be6647f6a76c88f03ddaf/test",
+            "size": 15865
+          }
+        },
+        "public": false,
+        "created_at": "2014-05-09T07:15:31Z",
+        "updated_at": "2014-05-09T10:12:07Z",
+        "description": "Storage and Persistance",
+        "comments": 0,
+        "user": null,
+        "comments_url": "https://api.github.com/gists/488ae845c00f0cae3e37/comments",
+        "owner": {
+          "login": "awashbrook",
+          "id": 1024064,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1024064?v=3",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/awashbrook",
+          "html_url": "https://github.com/awashbrook",
+          "followers_url": "https://api.github.com/users/awashbrook/followers",
+          "following_url": "https://api.github.com/users/awashbrook/following{/other_user}",
+          "gists_url": "https://api.github.com/users/awashbrook/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/awashbrook/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/awashbrook/subscriptions",
+          "organizations_url": "https://api.github.com/users/awashbrook/orgs",
+          "repos_url": "https://api.github.com/users/awashbrook/repos",
+          "events_url": "https://api.github.com/users/awashbrook/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/awashbrook/received_events",
+          "type": "User",
+          "site_admin": false
+        }
+      }
+    ],
+    "headers": {
+      "server": "GitHub.com",
+      "date": "Tue, 21 Apr 2015 07:19:21 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "content-length": "3821",
+      "status": "200 OK",
+      "x-ratelimit-limit": "5000",
+      "x-ratelimit-remaining": "4993",
+      "x-ratelimit-reset": "1429604211",
+      "cache-control": "private, max-age=60, s-maxage=60",
+      "etag": "\"fd30b32c4737900ba939f39b44f80123\"",
+      "x-oauth-scopes": "gist, notifications",
+      "x-accepted-oauth-scopes": "",
+      "vary": "Accept, Authorization, Cookie, X-GitHub-OTP",
+      "x-github-media-type": "github.v3",
+      "x-xss-protection": "1; mode=block",
+      "x-frame-options": "deny",
+      "content-security-policy": "default-src 'none'",
+      "access-control-allow-credentials": "true",
+      "access-control-expose-headers": "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "access-control-allow-origin": "*",
+      "x-github-request-id": "5E0AA53C:057D:14F3B3F:5535F9F9",
+      "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-served-by": "474556b853193c38f1b14328ce2d1b7d"
+    }
+  },
+  {
+    "scope": "https://api.github.com:443",
+    "method": "GET",
+    "path": "/gists/starred?access_token=44fd5341d5a18af19e7f2756159dc45452d4a071",
+    "body": "",
+    "status": 200,
+    "response": [
+      {
+        "url": "https://api.github.com/gists/6614023",
+        "forks_url": "https://api.github.com/gists/6614023/forks",
+        "commits_url": "https://api.github.com/gists/6614023/commits",
+        "id": "6614023",
+        "git_pull_url": "https://gist.github.com/6614023.git",
+        "git_push_url": "https://gist.github.com/6614023.git",
+        "html_url": "https://gist.github.com/6614023",
+        "files": {
+          "RickshawGraph.md": {
+            "filename": "RickshawGraph.md",
+            "type": "text/plain",
+            "language": "Markdown",
+            "raw_url": "https://gist.githubusercontent.com/jwalton/6614023/raw/44a0e9d0384bd0186dde26ca59e287804a8ef2df/RickshawGraph.md",
+            "size": 3700
+          },
+          "rickshawgraph.coffee": {
+            "filename": "rickshawgraph.coffee",
+            "type": "text/x-coffescript",
+            "language": "CoffeeScript",
+            "raw_url": "https://gist.githubusercontent.com/jwalton/6614023/raw/07c3a382845fbc27e0523d7f2de43e43e0904c4b/rickshawgraph.coffee",
+            "size": 15248
+          },
+          "rickshawgraph.html": {
+            "filename": "rickshawgraph.html",
+            "type": "text/html",
+            "language": "HTML",
+            "raw_url": "https://gist.githubusercontent.com/jwalton/6614023/raw/da626313b868c685e515db19bfd98c68db13d649/rickshawgraph.html",
+            "size": 152
+          },
+          "rickshawgraph.scss": {
+            "filename": "rickshawgraph.scss",
+            "type": "text/plain",
+            "language": "SCSS",
+            "raw_url": "https://gist.githubusercontent.com/jwalton/6614023/raw/8d1fbd74b4915b3b96b899b7c723cf078cf53fc9/rickshawgraph.scss",
+            "size": 1787
+          }
+        },
+        "public": true,
+        "created_at": "2013-09-18T19:09:15Z",
+        "updated_at": "2015-04-15T09:46:11Z",
+        "description": "Rickshaw Graph is a drop in replacement for Dashing's graph",
+        "comments": 18,
+        "user": null,
+        "comments_url": "https://api.github.com/gists/6614023/comments",
+        "owner": {
+          "login": "jwalton",
+          "id": 1771003,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1771003?v=3",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/jwalton",
+          "html_url": "https://github.com/jwalton",
+          "followers_url": "https://api.github.com/users/jwalton/followers",
+          "following_url": "https://api.github.com/users/jwalton/following{/other_user}",
+          "gists_url": "https://api.github.com/users/jwalton/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/jwalton/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/jwalton/subscriptions",
+          "organizations_url": "https://api.github.com/users/jwalton/orgs",
+          "repos_url": "https://api.github.com/users/jwalton/repos",
+          "events_url": "https://api.github.com/users/jwalton/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/jwalton/received_events",
+          "type": "User",
+          "site_admin": false
+        }
+      },
+      {
+        "url": "https://api.github.com/gists/2288960",
+        "forks_url": "https://api.github.com/gists/2288960/forks",
+        "commits_url": "https://api.github.com/gists/2288960/commits",
+        "id": "2288960",
+        "git_pull_url": "https://gist.github.com/2288960.git",
+        "git_push_url": "https://gist.github.com/2288960.git",
+        "html_url": "https://gist.github.com/2288960",
+        "files": {
+          "curl.md": {
+            "filename": "curl.md",
+            "type": "text/plain",
+            "language": "Markdown",
+            "raw_url": "https://gist.githubusercontent.com/caspyin/2288960/raw/764865baf0da704d3fb523aa2b1ae9657035cb71/curl.md",
+            "size": 4474
+          }
+        },
+        "public": true,
+        "created_at": "2012-04-03T02:58:27Z",
+        "updated_at": "2015-04-21T05:35:53Z",
+        "description": "A curl tutorial using GitHub's API",
+        "comments": 10,
+        "user": null,
+        "comments_url": "https://api.github.com/gists/2288960/comments",
+        "owner": {
+          "login": "caspyin",
+          "id": 780144,
+          "avatar_url": "https://avatars.githubusercontent.com/u/780144?v=3",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/caspyin",
+          "html_url": "https://github.com/caspyin",
+          "followers_url": "https://api.github.com/users/caspyin/followers",
+          "following_url": "https://api.github.com/users/caspyin/following{/other_user}",
+          "gists_url": "https://api.github.com/users/caspyin/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/caspyin/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/caspyin/subscriptions",
+          "organizations_url": "https://api.github.com/users/caspyin/orgs",
+          "repos_url": "https://api.github.com/users/caspyin/repos",
+          "events_url": "https://api.github.com/users/caspyin/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/caspyin/received_events",
+          "type": "User",
+          "site_admin": false
+        }
+      }
+    ],
+    "headers": {
+      "server": "GitHub.com",
+      "date": "Tue, 21 Apr 2015 07:19:22 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "content-length": "4046",
+      "status": "200 OK",
+      "x-ratelimit-limit": "5000",
+      "x-ratelimit-remaining": "4992",
+      "x-ratelimit-reset": "1429604211",
+      "cache-control": "private, max-age=60, s-maxage=60",
+      "etag": "\"1d6621bd6c373c4f3c93da9fe389e5b8\"",
+      "x-oauth-scopes": "gist, notifications",
+      "x-accepted-oauth-scopes": "",
+      "vary": "Accept, Authorization, Cookie, X-GitHub-OTP",
+      "x-github-media-type": "github.v3",
+      "x-xss-protection": "1; mode=block",
+      "x-frame-options": "deny",
+      "content-security-policy": "default-src 'none'",
+      "access-control-allow-credentials": "true",
+      "access-control-expose-headers": "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "access-control-allow-origin": "*",
+      "x-github-request-id": "5E0AA53C:057C:12848A8:5535F9FA",
+      "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-served-by": "a6882e5cd2513376cb9481dbcd83f3a2"
+    }
+  }
+]

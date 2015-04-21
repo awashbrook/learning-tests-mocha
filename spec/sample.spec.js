@@ -24,6 +24,8 @@ chai.use(sinonChai);
 
 //vcr.describe('sample', vcrOptions, function () {
 describe('public api sample', function () {
+  this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
+
   describe('test gists', function () {
     before(function () {
       nockConfig.fixtures.helpers.startRecordingFixtures('gists');
@@ -78,24 +80,24 @@ describe('public api sample', function () {
     });
   });
   describe('home energy api', function() {
-    describe('hec', function() {
+    before(function () {
+      nockConfig.fixtures.helpers.startRecordingFixtures('hec');
+    });
+    after(function () {
+      nockConfig.fixtures.helpers.finishRecordingFixtures('hec');
+    });
+    describe('hec request', function() {
       it('hecWsdl', function (done) {
-        before(function () {
-          nockConfig.fixtures.helpers.startRecordingFixtures('hec');
-        });
-        after(function () {
-          nockConfig.fixtures.helpers.finishRecordingFixtures('hec');
-        });
         request('http://sbapp.hescloud.net/session/wsdl', function (error, response, body) {
             expect(response.statusCode).to.equal(200);
             done();
           }
         );
       });
-      describe('soap', function() {
-        it('hecWsdl', function (done) {
-          discovery.retrieveWsdl(done, 'http://sbapp.hescloud.net/session/wsdl');
-        });
+    });
+    describe('soap', function() {
+      it('hecWsdl', function (done) {
+        discovery.retrieveWsdl(done, 'http://sbapp.hescloud.net/session/wsdl');
       });
     });
   });

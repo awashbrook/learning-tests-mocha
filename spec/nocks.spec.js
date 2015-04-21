@@ -14,18 +14,18 @@ var hecFixturesDir = fixturesDir + '/hec';
 
 var fixtures = {
   types: {
+    // Please note you can only record ONE service at a time...
     gists: {
-      record: true, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
+      record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
       recordedFixturesFile: fixturesDir + '/gists/gists.nocks.json'
     },
     hec: {
-      record: true, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
+      record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
       recordedFixturesFile: fixturesDir + '/hec/hec.nocks.json'
     }
   },
   helpers: {
     startRecordingFixtures: function (fixtureType) {
-      return;
       if (fixtures.types[fixtureType].record === true) {
         nock.recorder.rec({
           dont_print: true,
@@ -34,7 +34,6 @@ var fixtures = {
       }
     },
     finishRecordingFixtures: function(fixtureType) {
-      return;
       if (fixtures.types[fixtureType].record === true) {
         var nocks = nock.recorder.play();
         console.log("...recording " + nocks.length + " nocks to " + fixtures.types[fixtureType].recordedFixturesFile);
