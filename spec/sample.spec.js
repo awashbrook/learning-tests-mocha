@@ -23,10 +23,10 @@ var vcrOptions = {
 chai.use(sinonChai);
 
 //vcr.describe('sample', vcrOptions, function () {
-describe('public api sample', function () {
+describe.skip('public api sample', function () {
   this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
 
-  describe.only('gists github api', function () {
+  describe('gists github api', function () {
     before(function () {
       nockConfig.fixtures.helpers.startRecordingFixtures('gists');
     });
