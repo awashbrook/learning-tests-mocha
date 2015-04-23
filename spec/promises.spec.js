@@ -116,11 +116,10 @@ describe('sample based on two alternative "object" approaches to inheritance', f
       personPromises.then( function () { console.log('Both completed ok, yay :)')}).done(done);
     });
   });
-  describe.only("chained vs nested promises", function () {
+  describe("chained vs nested promises", function () {
     this.timeout(30 * 1000);
-    var personPromises;
     beforeEach(function () {
-      //personPromises = [ // Can't do this as they all fire in parallel when declared :)
+      //personPromises = [ // Can't do this as they all fire in parallel when declared :(
       //  q.delay(1).then( function () { console.log('1 Millis OK') }),
       //  q.delay(5000).then( function () { console.log('Five Secs OK') }),
       //  q.delay(1000).then( function () { console.log('One Sec OK') }),
@@ -129,6 +128,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
       //];
     });
     it("shows lots of short promise chain tuples aggregated togther with all()", function (done) {
+      // http://stackoverflow.com/questions/16976573/chaining-an-arbitrary-number-of-promises-in-q
       q.all([
           q.delay(1).then( function () { console.log('1 Millis OK') }),
           //q.delay(5000).then( function () { console.log('Five Secs OK') }),
@@ -137,7 +137,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
           q.delay(10).then( function () { console.log('10 Millis OK') })
       ]).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
     });
-    it("shows a chain stretching our tuples into single long hand chain each promise indented at same level (no nesting)", function (done) {
+    it("shows a simple sequential chain stretching our tuples above into single long hand chain each promise indented at same level (no nesting)", function (done) {
       q("Initial Value")
         .then(q.delay(100))
         .then( function () { console.log('\n100 Millis OK') })
@@ -147,7 +147,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
         .done(done);
     });
     it("shows a short chain long hand, this is NOT the correct way to declared nested promises", function (done) {
-      // the nested slide 16 may be leading me astray http://www.slideshare.net/ankitag9/avoiding-callback-hell?
+      // the nested final example may be leading me astray https://www.npmjs.com/package/q#chaining
       q("Initial Value")
         .then(q.delay(10) // First independently executing chain of promises
           .then( function () { console.log('10 Millis OK') }))
@@ -168,7 +168,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
       //}
       return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
     }
-    it("shows above mistake with helper, very easy to miss when you create independent promise chains with a sub-function", function (done) {
+    it("shows above mistake with helper, NOT correct and very easy to miss when you create independent promise chains with a sub-function", function (done) {
       q("Initial Value") //
         .then(setTimer(10))
         .then(setTimer(1))
@@ -178,14 +178,53 @@ describe('sample based on two alternative "object" approaches to inheritance', f
         .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
         .done(done);
     });
-    it.skip("when nested together as a sequence of promises", function (done) {
+    it("shows string together a single sequence of promises, with no nesting - OMG doesn't work!", function (done) {
+      var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
+        q.delay(1),
+        function () { console.log('1 Millis OK') },
+        q.delay(5000),
+        function () { console.log('Five Secs OK') },
+        q.delay(1000),
+        function () { console.log('One Sec OK') },
+        q.delay(100),
+        function () { console.log('100 Millis OK') },
+        q.delay(10),
+        function () { console.log('10 Millis OK') }
+      ];
       var result = q("Initial Value");
       personPromises.forEach(function (f) {
         result = result.then(f);
       });
-      result.then( function () { console.log('All completed in sequence, yay :)')}).done(done);
-      result.then( function () { console.log('All completed in sequence, yay :)')}).done(done);
-      // TODO Only first promise in array firing
+      result.then( function () { console.log(personPromises.length + ' promises completed in sequence, yay :)')}).done(done);
+    });
+    it("similar example from SO together a single sequence of promises, this one works", function (done) {
+      //http://stackoverflow.com/a/17764496 shows the reduce optimization of above with delay also :)
+
+      //var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
+      //  function () { console.log('1 Millis OK') },
+      //  function () { console.log('Five Secs OK') },
+      //  function () { console.log('One Sec OK') },
+      //  function () { console.log('100 Millis OK') },
+      //  function () { console.log('10 Millis OK') }
+      //];
+      var personPromises = [
+        1,
+        500,
+        100,
+        10,
+        1
+      ];
+      var chain = personPromises.reduce(function (totalWait, millis) {
+        return totalWait.then(function (previousValue) {
+          console.log(previousValue);
+          console.log(millis + ' Millis will pass');
+          // return your async operation
+          return q.delay(millis); // this promise doesn't return value
+        })
+      }, q.resolve(0));
+
+      chain.then( function () { console.log('...All completed in proper manner')})
+        .done(done);
     });
   });
   describe("successful promise resolution with mocha and chai", function () {
