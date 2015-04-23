@@ -120,23 +120,71 @@ describe('sample based on two alternative "object" approaches to inheritance', f
     this.timeout(30 * 1000);
     var personPromises;
     beforeEach(function () {
-      personPromises = [
-        q.delay(1).then( function () { console.log('1 Millis OK') }),
-        q.delay(10).then( function () { console.log('10 Millis OK') }),
-        q.delay(100).then( function () { console.log('100 Millis OK') }),
-        q.delay(1000).then( function () { console.log('One Sec OK') }),
-        q.delay(5000).then( function () { console.log('Five Secs OK') })
-      ];
+      //personPromises = [ // Can't do this as they all fire in parallel when declared :)
+      //  q.delay(1).then( function () { console.log('1 Millis OK') }),
+      //  q.delay(5000).then( function () { console.log('Five Secs OK') }),
+      //  q.delay(1000).then( function () { console.log('One Sec OK') }),
+      //  q.delay(100).then( function () { console.log('100 Millis OK') }),
+      //  q.delay(10).then( function () { console.log('10 Millis OK') })
+      //];
     });
-    it("when chained together as aggregated promises with all()", function (done) {
-      q.all(personPromises).then( function () { console.log('All completed ok, yay :)')}).done(done);
+    it("shows lots of short promise chain tuples aggregated togther with all()", function (done) {
+      q.all([
+          q.delay(1).then( function () { console.log('1 Millis OK') }),
+          //q.delay(5000).then( function () { console.log('Five Secs OK') }),
+          q.delay(1000).then( function () { console.log('One Sec OK') }),
+          q.delay(100).then( function () { console.log('100 Millis OK') }),
+          q.delay(10).then( function () { console.log('10 Millis OK') })
+      ]).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
+    });
+    it("shows a chain stretching our tuples into single long hand chain each promise indented at same level (no nesting)", function (done) {
+      q("Initial Value")
+        .then(q.delay(100))
+        .then( function () { console.log('\n100 Millis OK') })
+        .then(q.delay(10))
+        .then( function () { console.log('\n10 Millis OK') })
+        .then( function () { console.log('...All completed in proper manner')})
+        .done(done);
+    });
+    it("shows a short chain long hand, this is NOT the correct way to declared nested promises", function (done) {
+      // the nested slide 16 may be leading me astray http://www.slideshare.net/ankitag9/avoiding-callback-hell?
+      q("Initial Value")
+        .then(q.delay(10) // First independently executing chain of promises
+          .then( function () { console.log('10 Millis OK') }))
+        .then(q.delay(1) // Second independenttly executing chain of promises
+          .then( function () { console.log('1 Millis OK') }))
+        .then( function () { console.log('Completes immediately!')})
+        .done();
+      q.delay(100) // Third independenttly executing chain of promises
+        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
+        .done(done);
+    });
+    function setTimer(millis) {
+      // we are both declaring and resolving promise with this helper https://www.npmjs.com/package/q#using-deferreds
+      //function delay(ms) {
+      //  var deferred = Q.defer();
+      //  setTimeout(deferred.resolve, ms);
+      //  return deferred.promise;
+      //}
+      return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
+    }
+    it("shows above mistake with helper, very easy to miss when you create independent promise chains with a sub-function", function (done) {
+      q("Initial Value") //
+        .then(setTimer(10))
+        .then(setTimer(1))
+        .then( function () { console.log('Completes immediately!')})
+        .done();
+      q.delay(100) // Third independenttly executing chain of promises
+        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
+        .done(done);
     });
     it.skip("when nested together as a sequence of promises", function (done) {
       var result = q("Initial Value");
       personPromises.forEach(function (f) {
         result = result.then(f);
       });
-      result.then( function () { console.log('All completed ok, yay :)')}).done(done);
+      result.then( function () { console.log('All completed in sequence, yay :)')}).done(done);
+      result.then( function () { console.log('All completed in sequence, yay :)')}).done(done);
       // TODO Only first promise in array firing
     });
   });
