@@ -143,42 +143,10 @@ describe('sample based on two alternative "object" approaches to inheritance', f
         .then( function () { console.log('\n100 Millis OK') })
         .then(q.delay(10))
         .then( function () { console.log('\n10 Millis OK') })
-        .then( function () { console.log('...All completed in proper manner')})
+        .then( function () { console.log('...All completed in sequence, yay :)')})
         .done(done);
     });
-    it("shows a short chain long hand, this is NOT the correct way to declared nested promises", function (done) {
-      // the nested final example may be leading me astray https://www.npmjs.com/package/q#chaining
-      q("Initial Value")
-        .then(q.delay(10) // First independently executing chain of promises
-          .then( function () { console.log('10 Millis OK') }))
-        .then(q.delay(1) // Second independenttly executing chain of promises
-          .then( function () { console.log('1 Millis OK') }))
-        .then( function () { console.log('Completes immediately!')})
-        .done();
-      q.delay(100) // Third independenttly executing chain of promises
-        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
-        .done(done);
-    });
-    function setTimer(millis) {
-      // we are both declaring and resolving promise with this helper https://www.npmjs.com/package/q#using-deferreds
-      //function delay(ms) {
-      //  var deferred = Q.defer();
-      //  setTimeout(deferred.resolve, ms);
-      //  return deferred.promise;
-      //}
-      return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
-    }
-    it("shows above mistake with helper, NOT correct and very easy to miss when you create independent promise chains with a sub-function", function (done) {
-      q("Initial Value") //
-        .then(setTimer(10))
-        .then(setTimer(1))
-        .then( function () { console.log('Completes immediately!')})
-        .done();
-      q.delay(100) // Third independenttly executing chain of promises
-        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
-        .done(done);
-    });
-    it("shows string together a single sequence of promises, with no nesting - OMG doesn't work!", function (done) {
+    it("shows string together a single sequence of promises, with no nesting - OMG DOES NOT work - why is it not equivalent to above?!", function (done) {
       var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
         q.delay(1),
         function () { console.log('1 Millis OK') },
@@ -195,7 +163,39 @@ describe('sample based on two alternative "object" approaches to inheritance', f
       personPromises.forEach(function (f) {
         result = result.then(f);
       });
-      result.then( function () { console.log(personPromises.length + ' promises completed in sequence, yay :)')}).done(done);
+      result.then( function () { console.log(personPromises.length + ' promises completed in sequence, yay :(')}).done(done);
+    });
+    function setTimer(millis) {
+      //function delay(ms) {
+      // we are both declaring and resolving promise with this helper https://www.npmjs.com/package/q#using-deferreds
+      //  var deferred = Q.defer();
+      //  setTimeout(deferred.resolve, ms);
+      //  return deferred.promise;
+      //}
+      return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
+    }
+    it("shows a short chain long hand, this is NOT the correct way to declared nested promises", function (done) {
+      // the nested final example may be leading me astray https://www.npmjs.com/package/q#chaining
+      q("Initial Value")
+        .then(q.delay(10) // First independently executing chain of promises
+          .then( function () { console.log('10 Millis OK') }))
+        .then(q.delay(1) // Second independenttly executing chain of promises
+          .then( function () { console.log('1 Millis OK') }))
+        .then( function () { console.log('Completes immediately!')})
+        .done();
+      q.delay(100) // Third independenttly executing chain of promises
+        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
+        .done(done);
+    });
+    it("shows above mistake with helper, NOT correct and very easy to miss when you create independent promise chains with a sub-function", function (done) {
+      q("Initial Value") //
+        .then(setTimer(10))
+        .then(setTimer(1))
+        .then( function () { console.log('Completes immediately!')})
+        .done();
+      q.delay(100) // Third independenttly executing chain of promises
+        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel :(' ) })
+        .done(done);
     });
     it("similar example from SO together a single sequence of promises, this one works", function (done) {
       //http://stackoverflow.com/a/17764496 shows the reduce optimization of above with delay also :)
@@ -223,7 +223,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
         })
       }, q.resolve(0));
 
-      chain.then( function () { console.log('...All completed in proper manner')})
+      chain.then( function () { console.log('...All completed in proper manner...this one actually works :)')})
         .done(done);
     });
   });
