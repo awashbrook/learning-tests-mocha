@@ -49,7 +49,7 @@ var fixtures = {
   }
 };
 
-// Setup manual nocks with broad scope after recording of specific nocks
+// TODO - Setup manual nocks with broad scope after recording of specific nocks
 
 //var gistScope = nock('https://api.github.com')
 //    .persist()
@@ -73,11 +73,13 @@ before(function () {
         var nocks = nock.load(fixtures.types[fixtureType].recordedFixturesFile);
         nocks.forEach(function (nock) {
           nock.persist();
-          if(nock.scope === 'https://api.github.com:443') {
-            nock.filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=FAKE_TOKEN')
-          } else if (nock.path === '/anm/OperationManager' && typeof(nock.body) === 'string') {
-            nock.filteringRequestBody(/<sid>[^<]+<\/sid>/g, '<sid>FAKE_SID</sid>');
-          }
+          nock.log(console.log);
+          console.log(JSON.stringify(nock));
+          //if(nock.path === '/gists') {
+            nock.filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=FAKE_TOKEN'); // never getting here!
+          //} else if (nock.path === '/anm/OperationManager' && typeof(nock.body) === 'string') {
+            //nock.filteringRequestBody(/<sid>[^<]+<\/sid>/g, '<sid>FAKE_SID</sid>');
+          //}
         });
         console.log("...loaded " + nocks.length + " nocks from " + fixtures.types[fixtureType].recordedFixturesFile);
       } else {

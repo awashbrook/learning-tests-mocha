@@ -14,7 +14,7 @@ chai.use(sinonChai);
 
 var log = console; // TODO log and return?
 
-describe('sample based on two alternative "object" approaches to inheritance', function () {
+describe.skip('promise based samples based on two alternative "object" approaches to inheritance', function () {
 
   var protoPerson = {
     _disposition: 'Anticipation',
@@ -126,6 +126,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
       //  q.delay(100).then( function () { console.log('100 Millis OK') }),
       //  q.delay(10).then( function () { console.log('10 Millis OK') })
       //];
+      // Similar anti-pattern: http://www.html5rocks.com/en/tutorials/es6/promises/#toc-parallelism-sequencing
     });
     it("shows lots of short promise chain tuples aggregated togther with all()", function (done) {
       // http://stackoverflow.com/questions/16976573/chaining-an-arbitrary-number-of-promises-in-q
@@ -139,8 +140,8 @@ describe('sample based on two alternative "object" approaches to inheritance', f
     });
     it("shows a simple sequential chain stretching our tuples above into single long hand chain each promise indented at same level (no nesting)", function (done) {
       q("Initial Value")
-        .then(q.delay(100))
-        .then( function () { console.log('\n100 Millis OK') })
+        .then(q.delay(1000))
+        .then( function () { console.log('\n1000 Millis OK') })
         .then(q.delay(10))
         .then( function () { console.log('\n10 Millis OK') })
         .then( function () { console.log('...All completed in sequence, yay :)')})
@@ -163,7 +164,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
       personPromises.forEach(function (f) {
         result = result.then(f);
       });
-      result.then( function () { console.log(personPromises.length + ' promises completed in sequence, yay :(')}).done(done);
+      result.then( function () { console.log(personPromises.length + ' promises completed in sequence, nope :(')}).done(done);
     });
     function setTimer(millis) {
       //function delay(ms) {
@@ -189,24 +190,19 @@ describe('sample based on two alternative "object" approaches to inheritance', f
     });
     it("shows above mistake with helper, NOT correct and very easy to miss when you create independent promise chains with a sub-function", function (done) {
       q("Initial Value") //
-        .then(setTimer(10))
+        .then(setTimer(10))// you can only have a promise returning function declaration, you should NOT invoke a function, it is to be invoked in the future, duh!!
         .then(setTimer(1))
         .then( function () { console.log('Completes immediately!')})
         .done();
-      q.delay(100) // Third independenttly executing chain of promises
+      q.delay(100) // Third independently executing chain of promises
         .then( function () { console.log('...waiting 100 Millis for above to complete in parallel :(' ) })
         .done(done);
     });
-    it("similar example from SO together a single sequence of promises, this one works", function (done) {
+    it("similar example from SO together a single sequence of promises, this one WORKS", function (done) {
       //http://stackoverflow.com/a/17764496 shows the reduce optimization of above with delay also :)
 
-      //var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
-      //  function () { console.log('1 Millis OK') },
-      //  function () { console.log('Five Secs OK') },
-      //  function () { console.log('One Sec OK') },
-      //  function () { console.log('100 Millis OK') },
-      //  function () { console.log('10 Millis OK') }
-      //];
+      // Similar exmaple with forEach and reduce
+      // http://www.html5rocks.com/en/tutorials/es6/promises/#toc-parallelism-sequencing
       var personPromises = [
         1,
         500,
@@ -214,8 +210,8 @@ describe('sample based on two alternative "object" approaches to inheritance', f
         10,
         1
       ];
-      var chain = personPromises.reduce(function (totalWait, millis) {
-        return totalWait.then(function (previousValue) {
+      var chain = personPromises.reduce(function (previousPromise, millis) {
+        return previousPromise.then(function (previousValue) {
           console.log(previousValue);
           console.log(millis + ' Millis will pass');
           // return your async operation
@@ -225,6 +221,29 @@ describe('sample based on two alternative "object" approaches to inheritance', f
 
       chain.then( function () { console.log('...All completed in proper manner...this one actually works :)')})
         .done(done);
+    });
+    it("similar example on Queuing Asynchronous Actions tutorial", function () {
+      //http://www.html5rocks.com/en/tutorials/es6/promises/#toc-chaining
+    });
+    it.skip("shows nesting rather thsan chaining", function () {
+      // indented function declarations have access to all the parental closures as always…
+      // https://github.com/kriskowal/q#chaining
+      function authenticate() {
+        return getUsername() //
+          .then(function (username) {
+            return getUser(username);
+          })
+          // chained because we will not need the user name in the next event
+          .then(function (user) {
+            return getPassword()
+              // nested because we need both user and password next
+              .then(function (password) {
+                if (user.passwordHash !== hash(password)) {
+                  throw new Error("Can't authenticate");
+                }
+              });
+          });
+      }
     });
   });
   describe("successful promise resolution with mocha and chai", function () {
@@ -290,7 +309,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
     beforeEach(function () {
       cadey = closurePerson('Cadey');
     });
-    it('should illustrate use terminating of promise chains with done & done for promise fulfillment', function (done) {
+    it('should illustrate use terminating of promise chains with done & done for promise rejection', function (done) {
       expect(cadey.disposition()).to.equal('Anticipation');
 
       var pizzaOrderFulfillment = q.defer();
@@ -313,7 +332,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
 
       pizzaOrderFulfillment.reject("Couldn't find take out menu!");
     });
-    it('should illustrate returning our promises to mocha to await fulfillment', function () {
+    it('should illustrate returning our promises to mocha to await rejection', function () {
       expect(cadey.disposition()).to.equal('Anticipation');
 
       var pizzaOrderFulfillment = q.defer();
@@ -328,7 +347,7 @@ describe('sample based on two alternative "object" approaches to inheritance', f
           expect(err.message).to.have.string('menu');
         });
     });
-    it('should illustrate use of chai-as-promised to notify of promise fulfillment', function (done) {
+    it('should illustrate use of chai-as-promised to notify of promise rejection', function (done) {
       expect(cadey.disposition()).to.equal('Anticipation');
 
       var pizzaOrderFulfillment = q.defer();
