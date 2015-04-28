@@ -9,7 +9,6 @@ var fs = require('fs');
 var fixturesDir = __dirname + '/fixtures';
 //dir: __dirname + '/../spec/fixtures'
 //dir: 'cassettes' // For mocha vcr
-
 var fixtures = {
   types: {
     // Please note you can only record ONE service at a time...
@@ -40,9 +39,7 @@ var fixtures = {
         console.log("...recording " + nocks.length + " nocks to " + fixtures.types[fixtureType].recordedFixturesFile);
         nocks.forEach(function (nock) {
           if(nock.scope === 'https://api.github.com:443') {
-            nock.path = nock.path.replace(/^(.*)\?access_token.*$/g, '$1?access_token=FAKE_TOKEN');
-          } else if (nock.path === '/anm/OperationManager' && typeof(nock.body) === 'string') {
-            nock.body = nock.body.replace(/<sid>[^<]+<\/sid>/gm, '<sid>FAKE_SID</sid>');
+            nock.path = nock.path.replace(re.github.regex, re.github.substr);
           }
         });
         fs.writeFileSync(fixtures.types[fixtureType].recordedFixturesFile, JSON.stringify(nocks));
@@ -77,8 +74,7 @@ before(function () {
         nocks.forEach(function (nock) {
           nock.persist();
           nock.log(console.log);
-          console.log(JSON.stringify(nock));
-          nock.filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=FAKE_TOKEN');
+          nock.filteringPath(re.github.regex, re.github.substr);
         });
         console.log("...loaded " + nocks.length + " nocks from " + fixtures.types[fixtureType].recordedFixturesFile);
       } else {
@@ -88,10 +84,17 @@ before(function () {
   }
 });
 
+var re = {
+  github: {
+    regex: /^(.*)\?access_token.*$/g,
+    substr: '$1?access_token=FAKE_TOKEN'
+  }
+};
+
 describe("faking github oauth access token in outgoing requests", function () {
   it('should transform access token into FAKE_TOKEN', function () {
     var exampleGistRequest = 'https://api.github.com/gists/starred?access_token=123456789';
-    expect(exampleGistRequest.replace(/^(.*)\?access_token.*$/g, '$1?access_token=FAKE_TOKEN'))
+    expect(exampleGistRequest.replace(re.github.regex, re.github.substr))
       .to.have.string('https://api.github.com/gists/starred?access_token=FAKE_TOKEN');
   });
 
