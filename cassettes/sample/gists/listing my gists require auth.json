@@ -1,0 +1,15 @@
+[
+  {
+    "scope": "https://api.github.com:443",
+    "method": "GET",
+    "path": "/gists",
+    "body": "",
+    "status": 403,
+    "response": "Request forbidden by administrative rules. Please make sure your request has a User-Agent header (http://developer.github.com/v3/#user-agent-required). Check https://developer.github.com for other possible causes.\n",
+    "headers": {
+      "cache-control": "no-cache",
+      "connection": "close",
+      "content-type": "text/html"
+    }
+  }
+]

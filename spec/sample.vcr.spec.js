@@ -9,22 +9,21 @@ var
   request = require('request'),
   soap = require('soap');
 
-var nockConfig = require('./nocks.spec');
 var discovery = require('../src/discovery');
 var github = require('../github.config');
 
+// https://github.com/poetic/nock-vcr-recorder#configuration
+var vcr = require('nock-vcr-recorder-mocha');
+var vcrOptions = {
+  //mode: 'all' // overwrite existing fixtures
+};
+
 chai.use(sinonChai);
 
-describe.skip('public api sample', function () {
+vcr.describe('sample', vcrOptions, function () {
   this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
 
-  describe('gists github api', function () {
-    before(function () {
-      nockConfig.fixtures.helpers.startRecordingFixtures('gists');
-    });
-    after(function () {
-      nockConfig.fixtures.helpers.finishRecordingFixtures('gists');
-    });
+  describe('gists', function () {
     var gistOpts, starredGistOpts;
     beforeEach(function () {
       gistOpts = {
@@ -71,26 +70,18 @@ describe.skip('public api sample', function () {
       );
     });
   });
-  describe('home energy api', function() {
-    before(function () {
-      nockConfig.fixtures.helpers.startRecordingFixtures('hec');
+  describe('request', function() {
+    it('hecWsdl', function (done) {
+      request('http://sbapp.hescloud.net/session/wsdl', function (error, response, body) {
+          expect(response.statusCode).to.equal(200);
+          done();
+        }
+      );
     });
-    after(function () {
-      nockConfig.fixtures.helpers.finishRecordingFixtures('hec');
-    });
-    describe('hec request', function() {
-      it('hecWsdl', function (done) {
-        request('http://sbapp.hescloud.net/session/wsdl', function (error, response, body) {
-            expect(response.statusCode).to.equal(200);
-            done();
-          }
-        );
-      });
-    });
-    describe('soap', function() {
-      it('hecWsdl', function (done) {
-        discovery.retrieveWsdl(done, 'http://sbapp.hescloud.net/session/wsdl');
-      });
+  });
+  describe('soap', function() {
+    it('hecWsdl', function (done) {
+      discovery.retrieveWsdl(done, 'http://sbapp.hescloud.net/session/wsdl');
     });
   });
 });
