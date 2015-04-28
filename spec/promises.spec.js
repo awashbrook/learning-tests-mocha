@@ -147,7 +147,7 @@ describe.skip('promise based samples based on two alternative "object" approache
         .then( function () { console.log('...All completed in sequence, yay :)')})
         .done(done);
     });
-    it("shows string together a single sequence of promises, with no nesting - OMG DOES NOT work - why is it not equivalent to above?!", function (done) {
+    it("shows string together a single sequence of promises, with no nesting - DOES NOT work - why is it not equivalent to above?!", function (done) {
       var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
         q.delay(1),
         function () { console.log('1 Millis OK') },

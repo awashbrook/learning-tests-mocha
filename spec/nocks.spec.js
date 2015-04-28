@@ -17,11 +17,11 @@ var fixtures = {
       record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
       recordedFixturesFile: fixturesDir + '/gists/gists.nocks.json'
     }
-    //,
-    //hec: {
-    //  record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
-    //  recordedFixturesFile: fixturesDir + '/hec/hec.nocks.json'
-    //}
+    ,
+    hec: {
+      record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
+      recordedFixturesFile: fixturesDir + '/hec/hec.nocks.json'
+    }
   },
   helpers: {
     startRecordingFixtures: function (fixtureType) {

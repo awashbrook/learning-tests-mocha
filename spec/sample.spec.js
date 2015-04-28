@@ -79,7 +79,7 @@ describe('public api sample', function () {
       );
     });
   });
-  describe.skip('home energy api', function() {
+  describe('home energy api', function() {
     before(function () {
       nockConfig.fixtures.helpers.startRecordingFixtures('hec');
     });
