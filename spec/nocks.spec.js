@@ -15,11 +15,13 @@ var fixtures = {
     // Please note you can only record ONE service at a time...
     gists: {
       record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
+      dir: fixturesDir + '/gists',
       recordedFixturesFile: fixturesDir + '/gists/gists.nocks.json'
     }
     ,
     hec: {
       record: false, // IMPORTANT Temporarily enable to re-record mocked backend data, you MUST commit disabled to build efficiently :)
+      dir: fixturesDir + '/hec',
       recordedFixturesFile: fixturesDir + '/hec/hec.nocks.json'
     }
   },
@@ -49,21 +51,22 @@ var fixtures = {
   }
 };
 
-// TODO - Setup manual nocks with broad scope after recording of specific nocks
+// Setup manual nocks with broad scope after recording of specific nocks
 
 //var gistScope = nock('https://api.github.com')
-//    .persist()
-//    .filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=FAKE_TOKEN')
-//    .get('/gists/starred?access_token=FAKE_TOKEN')
-//    .reply(200, __dirname + '/../spec/fixtures/gists/gistsWsdl.xml');
-//
-//var hecScope = nock('http://sbapp.hescloud.net')
 //  .persist()
-//  .get('/session/wsdl')
-//  //.reply(200, cannedWsdl); // soap can parse WSDL from nock, awesome!
-//  .replyWithFile(200, __dirname + '/../spec/fixtures/hec/hecWsdl.xml');
+//  .filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=__FAKE_TOKEN__')
+//  .log(console.log)
+//  .get('/gists/starred?access_token=__FAKE_TOKEN__')
+//  .reply(200, fixtures.types.gists.dir + '/gistsWsdl.xml');
 
-// TODO Should take precedence over those recorded (TBC)
+var hecScope = nock('http://sbapp.hescloud.net')
+  .persist()
+  .log(console.log)
+  .get('/session/wsdl')
+  .replyWithFile(200, fixtures.types.hec.dir + '/hecWsdl.xml');
+
+// Manual nocks above take precedence over those recorded and defined below
 
 before(function () {
   // Load recorded nocks fist as we have specific train of requst/responses // TODO load *.nocks.json
@@ -75,11 +78,7 @@ before(function () {
           nock.persist();
           nock.log(console.log);
           console.log(JSON.stringify(nock));
-          //if(nock.path === '/gists') {
-            nock.filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=FAKE_TOKEN'); // never getting here!
-          //} else if (nock.path === '/anm/OperationManager' && typeof(nock.body) === 'string') {
-            //nock.filteringRequestBody(/<sid>[^<]+<\/sid>/g, '<sid>FAKE_SID</sid>');
-          //}
+          nock.filteringPath(/^(.*)\?access_token.*$/, '$1?access_token=FAKE_TOKEN');
         });
         console.log("...loaded " + nocks.length + " nocks from " + fixtures.types[fixtureType].recordedFixturesFile);
       } else {
