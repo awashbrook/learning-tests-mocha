@@ -21,8 +21,10 @@ var vcrOptions = {
 chai.use(sinonChai);
 
 vcr.describe('sample', vcrOptions, function () {
+//describe('sample', function () {
   this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
 
+  //vcr.describe('gists', vcrOptions, function () {
   describe('gists', function () {
     var gistOpts, starredGistOpts;
     beforeEach(function () {
