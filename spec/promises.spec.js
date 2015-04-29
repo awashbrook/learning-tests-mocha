@@ -14,7 +14,7 @@ chai.use(sinonChai);
 
 var log = console; // TODO log and return?
 
-describe.skip('promise based samples based on two alternative "object" approaches to inheritance', function () {
+describe('promise based samples based on two alternative "object" approaches to inheritance', function () {
 
   var protoPerson = {
     _disposition: 'Anticipation',
@@ -116,135 +116,180 @@ describe.skip('promise based samples based on two alternative "object" approache
       personPromises.then( function () { console.log('Both completed ok, yay :)')}).done(done);
     });
   });
-  describe("chained vs nested promises", function () {
+  describe("chaining promises together", function () {
     this.timeout(30 * 1000);
-    beforeEach(function () {
-      //personPromises = [ // Can't do this as they all fire in parallel when declared :(
-      //  q.delay(1).then( function () { console.log('1 Millis OK') }),
-      //  q.delay(5000).then( function () { console.log('Five Secs OK') }),
-      //  q.delay(1000).then( function () { console.log('One Sec OK') }),
-      //  q.delay(100).then( function () { console.log('100 Millis OK') }),
-      //  q.delay(10).then( function () { console.log('10 Millis OK') })
-      //];
-      // Similar anti-pattern: http://www.html5rocks.com/en/tutorials/es6/promises/#toc-parallelism-sequencing
-    });
-    it("shows lots of short promise chain tuples aggregated togther with all()", function (done) {
-      // http://stackoverflow.com/questions/16976573/chaining-an-arbitrary-number-of-promises-in-q
-      q.all([
+    describe("array handling helper methods for promises: all and spread", function () {
+      it("shows lots of short promise chain tuples aggregated togther with all()", function (done) {
+        // http://stackoverflow.com/questions/16976573/chaining-an-arbitrary-number-of-promises-in-q
+        // http://stackoverflow.com/a/24579654
+        q.all([
           q.delay(1).then( function () { console.log('1 Millis OK') }),
           //q.delay(5000).then( function () { console.log('Five Secs OK') }),
-          q.delay(1000).then( function () { console.log('One Sec OK') }),
+          q.delay(1000).then( function () { console.log('1000 Millis OK') }),
           q.delay(100).then( function () { console.log('100 Millis OK') }),
           q.delay(10).then( function () { console.log('10 Millis OK') })
-      ]).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
-    });
-    it("shows a simple sequential chain stretching our tuples above into single long hand chain each promise indented at same level (no nesting)", function (done) {
-      q("Initial Value")
-        .then(q.delay(1000))
-        .then( function () { console.log('\n1000 Millis OK') })
-        .then(q.delay(10))
-        .then( function () { console.log('\n10 Millis OK') })
-        .then( function () { console.log('...All completed in sequence, yay :)')})
-        .done(done);
-    });
-    it("shows string together a single sequence of promises, with no nesting - DOES NOT work - why is it not equivalent to above?!", function (done) {
-      var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
-        q.delay(1),
-        function () { console.log('1 Millis OK') },
-        q.delay(5000),
-        function () { console.log('Five Secs OK') },
-        q.delay(1000),
-        function () { console.log('One Sec OK') },
-        q.delay(100),
-        function () { console.log('100 Millis OK') },
-        q.delay(10),
-        function () { console.log('10 Millis OK') }
-      ];
-      var result = q("Initial Value");
-      personPromises.forEach(function (f) {
-        result = result.then(f);
+        ]).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
       });
-      result.then( function () { console.log(personPromises.length + ' promises completed in sequence, nope :(')}).done(done);
-    });
-    function setTimer(millis) {
-      //function delay(ms) {
-      // we are both declaring and resolving promise with this helper https://www.npmjs.com/package/q#using-deferreds
-      //  var deferred = Q.defer();
-      //  setTimeout(deferred.resolve, ms);
-      //  return deferred.promise;
-      //}
-      return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
-    }
-    it("shows a short chain long hand, this is NOT the correct way to declared nested promises", function (done) {
-      // the nested final example may be leading me astray https://www.npmjs.com/package/q#chaining
-      q("Initial Value")
-        .then(q.delay(10) // First independently executing chain of promises
-          .then( function () { console.log('10 Millis OK') }))
-        .then(q.delay(1) // Second independenttly executing chain of promises
-          .then( function () { console.log('1 Millis OK') }))
-        .then( function () { console.log('Completes immediately!')})
-        .done();
-      q.delay(100) // Third independenttly executing chain of promises
-        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
-        .done(done);
-    });
-    it("shows above mistake with helper, NOT correct and very easy to miss when you create independent promise chains with a sub-function", function (done) {
-      q("Initial Value") //
-        .then(setTimer(10))// you can only have a promise returning function declaration, you should NOT invoke a function, it is to be invoked in the future, duh!!
-        .then(setTimer(1))
-        .then( function () { console.log('Completes immediately!')})
-        .done();
-      q.delay(100) // Third independently executing chain of promises
-        .then( function () { console.log('...waiting 100 Millis for above to complete in parallel :(' ) })
-        .done(done);
-    });
-    it("similar example from SO together a single sequence of promises, this one WORKS", function (done) {
-      //http://stackoverflow.com/a/17764496 shows the reduce optimization of above with delay also :)
 
-      // Similar exmaple with forEach and reduce
-      // http://www.html5rocks.com/en/tutorials/es6/promises/#toc-parallelism-sequencing
-      var personPromises = [
-        1,
-        500,
-        100,
-        10,
-        1
-      ];
-      var chain = personPromises.reduce(function (previousPromise, millis) {
-        return previousPromise.then(function (previousValue) {
-          console.log(previousValue);
-          console.log(millis + ' Millis will pass');
-          // return your async operation
-          return q.delay(millis); // this promise doesn't return value
-        })
-      }, q.resolve(0));
-
-      chain.then( function () { console.log('...All completed in proper manner...this one actually works :)')})
-        .done(done);
-    });
-    it("similar example on Queuing Asynchronous Actions tutorial", function () {
-      //http://www.html5rocks.com/en/tutorials/es6/promises/#toc-chaining
-    });
-    it.skip("shows nesting rather thsan chaining", function () {
-      // indented function declarations have access to all the parental closures as always…
-      // https://github.com/kriskowal/q#chaining
-      function authenticate() {
-        return getUsername() //
+      // with promises as with continuation passing, if you want to pass on multiple around several arguments,
+      // you are limited just as with returning a single value from a function. thus chaining together async call
+      // with arrays of callback parameters are common in node
+      // http://stackoverflow.com/questions/22773920/can-promises-have-multiple-arguments-to-onfulfilled
+      it.skip("Bluebird and Q supports this convention by allowing you to use spread() an array as params across the arguments of next fulfillment", function () {
+        // https://github.com/kriskowal/q#combination
+        return getUsername()
           .then(function (username) {
-            return getUser(username);
+            return [username, getUser(username)];
           })
-          // chained because we will not need the user name in the next event
-          .then(function (user) {
-            return getPassword()
-              // nested because we need both user and password next
-              .then(function (password) {
-                if (user.passwordHash !== hash(password)) {
-                  throw new Error("Can't authenticate");
-                }
-              });
+          .spread(function (username, user) {
           });
-      }
+
+      });
     });
+    describe("sequences and nesting: want a bunch of functions to be executed one after the other, with a delay between them", function () {
+      // This was my own use case, but found documented precisely here also 
+      // http://stackoverflow.com/questions/24579521/how-to-use-q-all-with-delay?rq=1
+      beforeEach(function () {
+        //personPromises = [ // Can't do this as they all fire in parallel when declared :(
+        //  q.delay(1).then( function () { console.log('1 Millis OK') }),
+        //  q.delay(5000).then( function () { console.log('Five Secs OK') }),
+        //  q.delay(1000).then( function () { console.log('One Sec OK') }),
+        //  q.delay(100).then( function () { console.log('100 Millis OK') }),
+        //  q.delay(10).then( function () { console.log('10 Millis OK') })
+        //];
+        // Similar anti-pattern: http://www.html5rocks.com/en/tutorials/es6/promises/#toc-parallelism-sequencing
+      });
+      it("shows a simple sequential chain stretching our tuples above into single long hand chain each promise indented at same level (no nesting)", function (done) {
+        //delay() with promises this has evolved separately for Q and Bluebird, inspired by jquery
+        //
+        //be careful with q.delay() (what about q().delay()?), as it will behave unexpectedly, time bombs ticking as soon as they are declared
+        //
+        //http://stackoverflow.com/questions/17714082/delay-in-the-q-module
+        //  PR: https://github.com/kriskowal/q/pull/326/files
+        //
+        //    tests for delay are here, it is also used through q spec for testing q itself, doh!!
+        //  https://github.com/kriskowal/q/blob/v1/spec/q-spec.js#l1982
+        // TODO compleat test
+
+        q('simplest possible')
+          .then( function () { return q.delay(10); }).then(function () { console.log('\n10 Millis OK') })
+          .delay(5000) // doesn't function at all as expected!
+          .then( function () { console.log('\n 5000 Millis OK - Cant declare this way!') })
+          .then( function () { return q.delay(1000); }).then(function () { console.log('\n1000 Millis OK') })
+          .then( function () { console.log('...All completed in sequence, yay :)')})
+          .done(done);
+      });
+      it("shows string together a single sequence of promises, with no nesting - DOES NOT work - why is it not equivalent to above?!", function (done) {
+        var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
+          q.delay(1),
+          function () { console.log('1 Millis OK') },
+          q.delay(5000),
+          function () { console.log('Five Secs OK') },
+          q.delay(1000),
+          function () { console.log('One Sec OK') },
+          function () { console.log('One Sec OK') },
+          q.delay(100),
+          function () { console.log('100 Millis OK') },
+          q.delay(10),
+          function () { console.log('10 Millis OK') }
+        ];
+        var result = q("Initial Value");
+        personPromises.forEach(function (f) {
+          result = result.then(f);
+        });
+        result.then( function () { console.log(personPromises.length + ' promises completed in sequence, nope :(')}).done(done);
+      });
+      function setTimer(millis) {
+        //function delay(ms) {
+        // we are both declaring and resolving promise with this helper https://www.npmjs.com/package/q#using-deferreds
+        //  var deferred = Q.defer();
+        //  setTimeout(deferred.resolve, ms);
+        //  return deferred.promise;
+        //}
+        return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
+      }
+      it("shows a short chain long hand, this is NOT the correct way to declared nested promises", function (done) {
+        // the nested final example may be leading me astray https://www.npmjs.com/package/q#chaining
+        q("Initial Value")
+          .then(q.delay(10) // First independently executing chain of promises
+            .then( function () { console.log('10 Millis OK') }))
+          .then(q.delay(1) // Second independenttly executing chain of promises
+            .then( function () { console.log('1 Millis OK') }))
+          .then( function () { console.log('Completes immediately!')})
+          .done();
+        q.delay(100) // Third independenttly executing chain of promises
+          .then( function () { console.log('...waiting 100 Millis for above to complete in parallel') })
+          .done(done);
+      });
+      it("shows above mistake with helper, NOT correct and very easy to miss when you create independent promise chains with a sub-function", function (done) {
+        q("Initial Value") //
+          .then(setTimer(10))// you can only have a promise returning function declaration, you should NOT invoke a function, it is to be invoked in the future, duh!!
+          .then(setTimer(1))
+          .then( function () { console.log('Completes immediately!')})
+          .done();
+        q.delay(100) // Third independently executing chain of promises
+          .then( function () { console.log('...waiting 100 Millis for above to complete in parallel :(' ) })
+          .done(done);
+      });
+      it("is a GOOD example from SO to iterate over a single sequence of promises in serial fashion", function (done) {
+        // http://stackoverflow.com/a/17764496 shows the reduce optimization of above with delay also :)
+        // Similar exmaple with forEach and reduce: http://www.html5rocks.com/en/tutorials/es6/promises/#toc-parallelism-sequencing
+        var personPromises = [1, 500, 100, 10, 1];
+        var chain = personPromises.reduce(function (previousPromise, millis) {
+          return previousPromise.then(function (previousValue) {
+            console.log(previousValue);
+            console.log(millis + ' Millis will pass');
+            // return your async operation
+            return q.delay(millis); // this promise doesn't return value // static invocation of delay is different!
+          })
+        }, q());
+
+        chain.then( function () { console.log('...All completed in proper manner...this one actually works :)')})
+          .done(done);
+      });
+      it.only("same thing in brief", function (done) {
+        // they are iterating over funcs not times: http://stackoverflow.com/a/24579654
+        var personPromises = [1, 500, 100, 10, 1];
+        var result = personPromises.reduce( function(previousPromise, millis) {
+          return previousPromise.then( function () { console.log(millis + ' Millis will pass'); }).delay(millis);
+        }, q());
+        result.then( function () { console.log('...All completed in proper manner...this one actually works :)')})
+          .done(done);
+
+      });
+      it.skip("is NOT WORKING the same as above, using the compact form of reduce pattern for simply loops in series", function (done) {
+        // as per http://taoofcode.net/promise-anti-patterns/#comment-1263189977 Q(x) should be used to “cast” a value
+        // to a promise instead of Q.when(), the only reason when is kept is for the sequence compact pattern:
+        var personPromises = [1, 500, 100, 10, 1];
+        var chain = personPromises.reduce(q.when, q());
+        chain.then( function () { console.log('...All completed in proper manner...this one actually works :)')})
+          .done(done);
+      });
+      it("similar example on Queuing Asynchronous Actions tutorial", function () {
+        //http://www.html5rocks.com/en/tutorials/es6/promises/#toc-chaining
+      });
+      it.skip("shows nesting rather than chaining", function () {
+        // indented function declarations have access to all the parental closures as always…
+        // https://github.com/kriskowal/q#chaining
+        function authenticate() {
+          return getUsername() //
+            .then(function (username) {
+              return getUser(username);
+            })
+            // chained because we will not need the user name in the next event
+            .then(function (user) {
+              return getPassword()
+                // nested because we need both user and password next
+                .then(function (password) {
+                  if (user.passwordHash !== hash(password)) {
+                    throw new Error("Can't authenticate");
+                  }
+                });
+            });
+        }
+      });
+    });
+
   });
   describe("successful promise resolution with mocha and chai", function () {
     var cadey;
