@@ -143,11 +143,10 @@ describe('promise based samples based on two alternative "object" approaches to 
           })
           .spread(function (username, user) {
           });
-
       });
     });
     describe("sequences and nesting: want a bunch of functions to be executed one after the other, with a delay between them", function () {
-      // This was my own use case, but found documented precisely here also 
+      // delay was my own use case as simplest async op, eventaull found documented precisely
       // http://stackoverflow.com/questions/24579521/how-to-use-q-all-with-delay?rq=1
       beforeEach(function () {
         //personPromises = [ // Can't do this as they all fire in parallel when declared :(
@@ -159,28 +158,40 @@ describe('promise based samples based on two alternative "object" approaches to 
         //];
         // Similar anti-pattern: http://www.html5rocks.com/en/tutorials/es6/promises/#toc-parallelism-sequencing
       });
-      it("shows a simple sequential chain stretching our tuples above into single long hand chain each promise indented at same level (no nesting)", function (done) {
+      it('WORKS and shows simplest possible way of showing delay then log, highligting common mistake', function (done) {
+        // This case does NOT use delay in the most appropriate manner (see next)
+        q()
+          .then(q.delay(60 * 1000))// Antipattern: immediately creates an independently ticking time bomb
+          .then( function () { console.log('\n ...FAILED to wait one minute - Cant declare that way ever!') })
+          .then( function () { return q.delay(100); })
+          .then( function () { console.log('\n ...100 millis OK') })
+          .then( function () { return q.delay(10); }).then(function () { console.log('\n10 Millis OK') })
+          .then( function () { console.log('...Only last two complete properly :)')})
+          .done(done);
+        // The above is highlighting a very easy mistake, with any function that creates deferreds and resolves
+        // similar to q.delay() https://www.npmjs.com/package/q#using-deferreds
+        //
+        //function delay(ms) {
+        //  var deferred = Q.defer();
+        //  setTimeout(deferred.resolve, ms);
+        //  return deferred.promise;
+        //}
+        // The antipattern is accidentally invoking such a function immediately, instead of wrapping within a function!
+      });
+      it.skip("shows how to use delay() properly)", function (done) {//TODO
         //delay() with promises this has evolved separately for Q and Bluebird, inspired by jquery
         //
-        //be careful with q.delay() (what about q().delay()?), as it will behave unexpectedly, time bombs ticking as soon as they are declared
+        // The static form q.delay() immediately creates an independently ticking time bomb, as soon as it is declared
+        // this is unexpected, no errors will be thrown...
+        // Wrapping iniside a function closure works to have it tick within your promise chain
+        // The q method level delay sets its timer when resolved, much more convienient:
+        // http://stackoverflow.com/questions/17714082/delay-in-the-q-module and PR: https://github.com/kriskowal/q/pull/326/files
         //
-        //http://stackoverflow.com/questions/17714082/delay-in-the-q-module
-        //  PR: https://github.com/kriskowal/q/pull/326/files
-        //
-        //    tests for delay are here, it is also used through q spec for testing q itself, doh!!
+        //  Tests for delay are here, it is also used through q spec for testing q itself, doh!!
         //  https://github.com/kriskowal/q/blob/v1/spec/q-spec.js#l1982
-        // TODO compleat test
-
-        q('simplest possible')
-          .then( function () { return q.delay(10); }).then(function () { console.log('\n10 Millis OK') })
-          .delay(5000) // doesn't function at all as expected!
-          .then( function () { console.log('\n 5000 Millis OK - Cant declare this way!') })
-          .then( function () { return q.delay(1000); }).then(function () { console.log('\n1000 Millis OK') })
-          .then( function () { console.log('...All completed in sequence, yay :)')})
-          .done(done);
       });
-      it("shows string together a single sequence of promises, with no nesting - DOES NOT work - why is it not equivalent to above?!", function (done) {
-        var personPromises = [ // Gotta get rid of then and stretch out this snake into a real chain :)
+      it("is BROKEN, failing to iterate over single unnested sequence of promises - it is it not equivalent to above", function (done) {
+        var personPromises = [
           q.delay(1),
           function () { console.log('1 Millis OK') },
           q.delay(5000),
@@ -197,15 +208,11 @@ describe('promise based samples based on two alternative "object" approaches to 
         personPromises.forEach(function (f) {
           result = result.then(f);
         });
-        result.then( function () { console.log(personPromises.length + ' promises completed in sequence, nope :(')}).done(done);
+        result.then( function () { console.log(personPromises.length + ' promises completed in sequence, NOPE :(')}).done(done);
       });
       function setTimer(millis) {
-        //function delay(ms) {
-        // we are both declaring and resolving promise with this helper https://www.npmjs.com/package/q#using-deferreds
-        //  var deferred = Q.defer();
-        //  setTimeout(deferred.resolve, ms);
-        //  return deferred.promise;
-        //}
+        // This works only as the head of a promise chain...not as links within it
+        // Very easy to miss
         return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
       }
       it("shows a short chain long hand, this is NOT the correct way to declared nested promises", function (done) {
@@ -223,11 +230,12 @@ describe('promise based samples based on two alternative "object" approaches to 
       });
       it("shows above mistake with helper, NOT correct and very easy to miss when you create independent promise chains with a sub-function", function (done) {
         q("Initial Value") //
-          .then(setTimer(10))// you can only have a promise returning function declaration, you should NOT invoke a function, it is to be invoked in the future, duh!!
-          .then(setTimer(1))
+          .then(setTimer(10)) // You should never invoke a function directly within a then, it is to be invoked in the future, duh!!
+          .then(setTimer(1)) // If you see parenthisis within your then, your doing it wrong :)
           .then( function () { console.log('Completes immediately!')})
           .done();
-        q.delay(100) // Third independently executing chain of promises
+
+        setTimer(500) // Third independently executing chain of promises
           .then( function () { console.log('...waiting 100 Millis for above to complete in parallel :(' ) })
           .done(done);
       });
@@ -247,7 +255,7 @@ describe('promise based samples based on two alternative "object" approaches to 
         chain.then( function () { console.log('...All completed in proper manner...this one actually works :)')})
           .done(done);
       });
-      it.only("same thing in brief", function (done) {
+      it("same thing in brief", function (done) {
         // they are iterating over funcs not times: http://stackoverflow.com/a/24579654
         var personPromises = [1, 500, 100, 10, 1];
         var result = personPromises.reduce( function(previousPromise, millis) {
