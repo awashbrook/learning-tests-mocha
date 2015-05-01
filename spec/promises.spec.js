@@ -7,6 +7,7 @@ var
   sinon = require('sinon'),
   sinonChai = require('sinon-chai'),
 
+  _ = require('lodash'),
   q = require('q');
 
 chai.use(chaiAsPromised);
@@ -124,17 +125,22 @@ describe('promise based samples based on two alternative "object" approaches to 
         // http://stackoverflow.com/a/24579654
         q.all([
           q.delay(1).then( function () { console.log('1 Millis OK') }),
-          //q.delay(5000).then( function () { console.log('Five Secs OK') }),
           q.delay(1000).then( function () { console.log('1000 Millis OK') }),
           q.delay(100).then( function () { console.log('100 Millis OK') }),
           q.delay(10).then( function () { console.log('10 Millis OK') })
         ]).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
       });
-
       // with promises as with continuation passing, if you want to pass on multiple around several arguments,
       // you are limited just as with returning a single value from a function. thus chaining together async call
       // with arrays of callback parameters are common in node
       // http://stackoverflow.com/questions/22773920/can-promises-have-multiple-arguments-to-onfulfilled
+      it("shows how to reproduce the above parallel execution using map", function (done) {
+        var delayMillis = [1, 1000, 100, 1];
+        q.all(_.map(delayMillis, function (millis) {
+            return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
+          })
+        ).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
+      });
       it.skip("Bluebird and Q supports this convention by allowing you to use spread() an array as params across the arguments of next fulfillment", function () {
         // https://github.com/kriskowal/q#combination
         return getUsername()
