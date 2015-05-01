@@ -9,13 +9,13 @@ var
   request = require('request'),
   soap = require('soap');
 
-var nockConfig = require('./nocks.spec');
-var discovery = require('../src/discovery');
-var github = require('../github.config');
+var nockConfig = require('./nocks.spec.js');
+var discovery = require('../../src/discovery');
+var github = require('../../github.config');
 
 chai.use(sinonChai);
 
-describe.skip('public api sample', function () {
+describe('public api sample', function () {
   this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
 
   describe('gists github api', function () {

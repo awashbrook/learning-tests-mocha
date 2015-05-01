@@ -9,8 +9,8 @@ var
   request = require('request'),
   soap = require('soap');
 
-var discovery = require('../src/discovery');
-var github = require('../github.config');
+var discovery = require('../../src/discovery');
+var github = require('../../github.config');
 
 // https://github.com/poetic/nock-vcr-recorder#configuration
 var vcr = require('nock-vcr-recorder-mocha');

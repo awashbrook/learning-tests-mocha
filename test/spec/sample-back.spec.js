@@ -7,25 +7,27 @@ var
   sinonChai = require('sinon-chai'),
 
   request = require('request'),
-  soap = require('soap');
+  soap = require('soap'),
+  q = require('q');
 
 var nock = require('nock');
-nock.enableNetConnect(); // Otherwise we get 'NetConnectNotAllowedError'. This error happens when fixture already exists with nockBack!!
+
+//nock.enableNetConnect(); // Otherwise we get 'NetConnectNotAllowedError'. This error happens when fixture already exists with nockBack!!
 
 var nockBack = nock.back;
 nockBack.fixtures = __dirname + '/fixtures_back';
 
 //var nockConfig = require('./nocks.spec');
-var discovery = require('../src/discovery');
-var github = require('../github.config');
+var discovery = require('../../src/discovery');
+var github = require('../../github.config');
 
 chai.use(sinonChai);
 
 describe('public api sample', function () {
   this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
   before(function () {
-    //nockBack.setMode('dryrun'); // the default
-    nockBack.setMode('record'); // the default
+    //nockBack.setMode('dryrun'); // default
+    nockBack.setMode('record');
   });
 
   var filterOutAuthInRequest = function (scope) {
@@ -59,7 +61,8 @@ describe('public api sample', function () {
           }
         );
       });
-      it('list my gists with auth token', function (done) {
+      it('list gists with auth token', function (done) {
+
         request(gistOpts, function (error, response, body) {
             expect(response.statusCode).to.equal(200);
             //console.log(body);
