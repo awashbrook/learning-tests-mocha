@@ -9,6 +9,7 @@ var
 
   _ = require('lodash'),
   q = require('q');
+q.longStackSupport = true;
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -117,8 +118,12 @@ describe('promise based samples based on two alternative "object" approaches to 
       personPromises.then( function () { console.log('Both completed ok, yay :)')}).done(done);
     });
   });
-  describe("chaining promises together", function () {
+  describe.only("chaining promises together", function () {
     this.timeout(30 * 1000);
+    it("shows how you can elegantly handle basic logging of resolution and rejection by console functions", function (done) {
+      q.delay(1).then(function () { return 'OK'; })
+        .then(console.log).catch(console.error).done(done);
+    });
     describe("array handling helper methods for promises: all and spread", function () {
       it("shows lots of short promise chain tuples aggregated togther with all()", function (done) {
         // http://stackoverflow.com/questions/16976573/chaining-an-arbitrary-number-of-promises-in-q
@@ -130,17 +135,20 @@ describe('promise based samples based on two alternative "object" approaches to 
           q.delay(10).then( function () { console.log('10 Millis OK') })
         ]).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
       });
+      it("shows how to reproduce the above parallel execution using map", function (done) {
+        var delayMillis = [1, 1000, 100, 1];
+        q.all(_.map(delayMillis, function (millis) {
+            return q.delay(millis).then( function () { console.log(millis + ' Millis OK'); return millis });
+          })
+        ).then( function (results) {
+            console.log('All completed in parallel, promises return: ' + JSON.stringify(results));
+            expect(results).to.deep.equal(delayMillis);
+          }).done(done);
+      });
       // with promises as with continuation passing, if you want to pass on multiple around several arguments,
       // you are limited just as with returning a single value from a function. thus chaining together async call
       // with arrays of callback parameters are common in node
       // http://stackoverflow.com/questions/22773920/can-promises-have-multiple-arguments-to-onfulfilled
-      it("shows how to reproduce the above parallel execution using map", function (done) {
-        var delayMillis = [1, 1000, 100, 1];
-        q.all(_.map(delayMillis, function (millis) {
-            return q.delay(millis).then( function () { console.log(millis + ' Millis OK') });
-          })
-        ).then( function () { console.log('All completed in parallel, yay :)')}).done(done);
-      });
       it.skip("Bluebird and Q supports this convention by allowing you to use spread() an array as params across the arguments of next fulfillment", function () {
         // https://github.com/kriskowal/q#combination
         return getUsername()
