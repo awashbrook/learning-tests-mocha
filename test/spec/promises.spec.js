@@ -118,7 +118,7 @@ describe('promise based samples based on two alternative "object" approaches to 
       personPromises.then( function () { console.log('Both completed ok, yay :)')}).done(done);
     });
   });
-  describe.only("chaining promises together", function () {
+  describe("chaining promises together", function () {
     this.timeout(30 * 1000);
     it("shows how you can elegantly handle basic logging of resolution and rejection by console functions", function (done) {
       q.delay(1).then(function () { return 'OK'; })

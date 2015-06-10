@@ -23,7 +23,7 @@ var github = require('../../github.config');
 
 chai.use(sinonChai);
 
-describe('public api sample', function () {
+describe.skip('public api sample', function () {
   this.timeout(10 * 1000); // allow a minute for individual calls with internet endpoints
   before(function () {
     //nockBack.setMode('dryrun'); // default

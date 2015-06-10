@@ -10,7 +10,7 @@ var
 
 chai.use(sinonChai);
 
-describe.only('lodash waza', function () {
+describe('lodash waza', function () {
   describe("deduplication waza", function () {
     it("demonstrate without() deduplicate arrays of new primitive values vs existing values", function () {
       // without works when we have a few baseline values

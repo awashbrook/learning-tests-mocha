@@ -24,6 +24,6 @@
     "nock-vcr-recorder-mocha": "^0.3.2"
   },
   "scripts": {
-    "test": "jshint src spec; ./node_modules/.bin/mocha spec"
+    "test": "jshint src spec; ./node_modules/.bin/mocha test/spec"
   }
 }
